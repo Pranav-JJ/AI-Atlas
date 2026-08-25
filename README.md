@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 0 (scaffold).** The toolchain is in place. Content, routing, search and progress tracking do not exist yet. See the roadmap below.
+> **Status: Phase 1.** Toolchain and deployment pipeline are in place, with routing and a real methodology page. Content, search and progress tracking do not exist yet. See the roadmap below.
 
 ---
 
@@ -26,6 +26,7 @@ npm run dev     # http://localhost:5173/ai-atlas/
 | `npm run dev` | Vite dev server with HMR |
 | `npm run build` | Production build into `dist/` |
 | `npm run preview` | Serve `dist/` locally at the real base path |
+| `npm run preview:pages` | Serve `dist/` under **GitHub Pages' actual rules** — see below |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (includes the security guardrails below) |
 | `npm run lint:fix` | ESLint with autofix |
@@ -67,11 +68,35 @@ VITE_BASE_PATH=/ npm run build   # root-domain build
 
 GitHub Pages setup is **manual** (the `gh` CLI is not installed in this environment):
 
-1. Create the repository on GitHub.
+1. Create the repository on GitHub and push this branch.
 2. **Settings → Pages → Source → GitHub Actions.**
-3. Push to `main`; the deploy workflow publishes `dist/`.
+3. Push to `main`. [`deploy.yml`](.github/workflows/deploy.yml) builds and publishes `dist/`, then smoke-tests the live URL.
 
-*(The workflows land in Phase 1.)*
+The deploy workflow takes the base path from `actions/configure-pages`, so **renaming the repository or adding a custom domain needs no code change** — only the local default in `vite.config.ts` is `/ai-atlas/`.
+
+### How routing survives a static host
+
+GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two mechanisms handle it:
+
+| Route kind | Mechanism | Result |
+| --- | --- | --- |
+| Known at build time (`/`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Dynamic (`/library/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
+
+Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
+
+The redirect logic lives in [`src/lib/spa-fallback.ts`](src/lib/spa-fallback.ts) and is **inlined into `404.html` at build time from the same tested source**, so there is no untested copy-paste in a static HTML file.
+
+### Verifying deployment behaviour locally
+
+`vite preview` has its own SPA fallback and so cannot reveal Pages-specific bugs. To reproduce Pages' actual rules (serve the file, else `404.html` with a 404 status):
+
+```bash
+npm run build
+npm run preview:pages   # http://localhost:4180/ai-atlas/
+```
+
+Expected: `/` and `/about` return **200**; `/library?q=nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
 
 ## Dependency pinning notes
 
@@ -110,8 +135,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0 | Toolchain bootstrap | ✅ Done |
-| 1 | GitHub Pages pipeline (deploy early to de-risk base paths) | Next |
-| 2 | Content schema, Zod validation, build pipeline | |
+| 1 | GitHub Pages pipeline (deploy early to de-risk base paths) | ✅ Done |
+| 2 | Content schema, Zod validation, build pipeline | Next |
 | 3 | Design system, app shell, routing | |
 | 4 | Resource library — search, filter, sort, detail | |
 | 5 | Local user state — bookmarks, completion, profile | |

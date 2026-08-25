@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel superseded runs on the same branch; the newest push is the one that matters.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.1'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Assert no secrets were bundled
+        # The deployed bundle is public. Nothing resembling an env file or a key
+        # may ever reach dist/. This is cheap insurance against a future mistake.
+        run: |
+          if find dist -name '.env*' -o -name '*.pem' -o -name '*.key' | grep -q .; then
+            echo "::error::Secret-like files found in dist/"
+            exit 1
+          fi
+          if grep -rEl 'sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}' dist/ 2>/dev/null | grep -q .; then
+            echo "::error::Something matching an API key pattern is present in dist/"
+            exit 1
+          fi
+          echo "No secret-like content in dist/"
+
+      - name: Assert the Pages SPA fallback was emitted
+        run: test -f dist/404.html && echo "404.html present"
+
+      - name: Upload build for inspection
+        # GitHub Pages allows only one live environment per repo, so PR preview URLs
+        # are not possible. A downloadable artifact is the honest substitute.
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
+          retention-days: 7

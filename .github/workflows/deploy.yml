@@ -1,0 +1,107 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Allows a manual redeploy from the Actions tab without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deployments at once; never cancel one that is mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.1'
+          cache: npm
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - name: Install
+        run: npm ci
+
+      # The same gates as CI. A deploy must never be able to publish something
+      # that would have failed a pull request.
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        env:
+          # configure-pages resolves the real base path from the repository's Pages
+          # settings, so a rename or a move to a custom domain needs no code change.
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path && format('{0}/', steps.pages.outputs.base_path) || '/' }}
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Smoke test the deployment
+        # Post-deployment verification: the site must actually serve, and a deep
+        # link must survive the 404 fallback. A green deploy step alone does not
+        # prove either of those.
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          echo "Testing $PAGE_URL"
+
+          home_status=$(curl -sS -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "$PAGE_URL")
+          echo "  home            -> $home_status"
+          [ "$home_status" = "200" ] || { echo "::error::Home page returned $home_status"; exit 1; }
+
+          # /about is pre-rendered as a real file, so it must be a true 200 —
+          # not a 404 that happens to render correctly after a client redirect.
+          about_status=$(curl -sS -o /dev/null -w '%{http_code}' "${PAGE_URL}about")
+          echo "  /about          -> $about_status"
+          [ "$about_status" = "200" ] || { echo "::error::Deep link /about returned $about_status"; exit 1; }
+
+          # An unknown/dynamic path must serve the SPA fallback, which redirects
+          # rather than showing GitHub's generic 404. Pages returns HTTP 404 with
+          # that body, which is correct — assert on the body, not the status.
+          fallback=$(curl -sS "${PAGE_URL}definitely-not-a-real-route")
+          echo "$fallback" | grep -q 'encodeFallbackUrl' \
+            || { echo "::error::Unknown route did not serve the SPA fallback page"; exit 1; }
+          echo "  unknown route   -> SPA fallback served"
+
+          echo "Smoke test passed."

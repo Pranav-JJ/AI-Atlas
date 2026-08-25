@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 1.** Toolchain and deployment pipeline are in place, with routing and a real methodology page. Content, search and progress tracking do not exist yet. See the roadmap below.
+> **Status: Phase 2.** Toolchain, deployment pipeline and the content pipeline are in place, with a validated catalogue of 124 records. The library UI, search and progress tracking do not exist yet. See the roadmap below.
 
 ---
 
@@ -27,6 +27,8 @@ npm run dev     # http://localhost:5173/AI-Atlas/
 | `npm run build` | Production build into `dist/` |
 | `npm run preview` | Serve `dist/` locally at the real base path |
 | `npm run preview:pages` | Serve `dist/` under **GitHub Pages' actual rules** — see below |
+| `npm run content:validate` | Check `content/` against the schemas and the 14 editorial rules |
+| `npm run content:build` | Compile `content/` into typed modules + a prebuilt search index |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (includes the security guardrails below) |
 | `npm run lint:fix` | ESLint with autofix |
@@ -98,6 +100,28 @@ npm run preview:pages   # http://localhost:4180/AI-Atlas/
 
 Expected: `/` and `/about` return **200**; `/library?q=nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
 
+## Content
+
+`content/` is the source of truth. Adding a resource is a JSON edit and a pull request — no component changes. See [CONTRIBUTING.md](CONTRIBUTING.md) to add one, and [EDITORIAL_POLICY.md](EDITORIAL_POLICY.md) for what the catalogue promises.
+
+```
+content/*.json ──(zod schemas + 14 cross-record rules)──▶ src/content/generated/*.ts
+                                                     └──▶ prebuilt MiniSearch index
+```
+
+`src/content/generated/` is **derived and gitignored**, rebuilt by `predev`, `prebuild` and CI. Never edit or commit it.
+
+Content is compiled into typed TypeScript rather than fetched as JSON at runtime: no network request, no loading state for content, and a content/schema mismatch becomes a compile error instead of a crash in someone's browser. The search index is built at build time — tokenising the catalogue in the browser on every page load would be the most expensive thing the app does.
+
+### Two promises the build enforces
+
+1. **Nothing is invented.** No URL, title, author, duration or peer-review status is written from memory. Unknown means `null`.
+2. **Nothing unchecked is presented as authoritative.** `status: "verified"` requires a URL, a verification date *and* a verifier (rule 5); a record with no URL is forced to `unverified` (rule 6). Verifications older than 180 days are downgraded to `stale` automatically.
+
+These are validation rules, not conventions — `npm run content:validate` fails, and it is a required CI check. Every one of the 14 rules has a test proving it **rejects a deliberately broken fixture** with a message naming the file and the record. A validation rule with no failing test is a rule nobody has checked actually fires.
+
+Note that **an automated link check is not verification.** A script confirming HTTP 200 proves a server answered; it says nothing about whether the page still matches how we described it. Scripts may only produce `unverified` drafts for human review.
+
 ## Dependency pinning notes
 
 Several packages are deliberately **not** on `latest`. Read this before "upgrading" them:
@@ -136,8 +160,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | --- | --- | --- |
 | 0 | Toolchain bootstrap | ✅ Done |
 | 1 | GitHub Pages pipeline (deploy early to de-risk base paths) | ✅ Done |
-| 2 | Content schema, Zod validation, build pipeline | Next |
-| 3 | Design system, app shell, routing | |
+| 2 | Content schema, Zod validation, build pipeline | ✅ Done |
+| 3 | Design system, app shell, routing | Next |
 | 4 | Resource library — search, filter, sort, detail | |
 | 5 | Local user state — bookmarks, completion, profile | |
 | 6 | Dashboard | |

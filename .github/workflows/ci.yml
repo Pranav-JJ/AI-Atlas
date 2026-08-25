@@ -33,6 +33,14 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      # Required check: content/ must be valid before anything is built from it.
+      # Errors fail; warnings (stale verifications, duplicate urls) are reported.
+      - name: Validate content
+        run: npm run content:validate
+
+      - name: Build content
+        run: npm run content:build
+
       - name: Lint
         run: npm run lint
 

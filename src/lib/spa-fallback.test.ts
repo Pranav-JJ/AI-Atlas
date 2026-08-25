@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { decodeFallbackUrl, encodeFallbackUrl } from './spa-fallback.ts'
+import { applyFallbackRedirect, decodeFallbackUrl, encodeFallbackUrl } from './spa-fallback.ts'
 
 const BASE = '/AI-Atlas/'
 
@@ -87,5 +87,56 @@ describe('round trip', () => {
 
   it('restores correctly when hosted at the domain root', () => {
     expect(roundTrip('/', '/library?q=nlp&type=video')).toBe('/library?q=nlp&type=video')
+  })
+})
+
+describe('applyFallbackRedirect (browser integration)', () => {
+  function setLocation(url: string) {
+    window.history.replaceState(null, '', url)
+  }
+
+  it('rewrites history when the load came from the 404 fallback', () => {
+    setLocation('/AI-Atlas/?/library&q=nlp~and~type=video')
+
+    applyFallbackRedirect()
+
+    expect(window.location.pathname).toBe('/AI-Atlas/library')
+    expect(window.location.search).toBe('?q=nlp&type=video')
+  })
+
+  it('leaves a normal visit untouched', () => {
+    setLocation('/AI-Atlas/library?q=nlp')
+
+    applyFallbackRedirect()
+
+    expect(window.location.pathname).toBe('/AI-Atlas/library')
+    expect(window.location.search).toBe('?q=nlp')
+  })
+
+  it('leaves the bare home page untouched', () => {
+    setLocation('/AI-Atlas/')
+
+    applyFallbackRedirect()
+
+    expect(window.location.pathname).toBe('/AI-Atlas/')
+    expect(window.location.search).toBe('')
+  })
+
+  it('preserves the hash through the rewrite', () => {
+    setLocation('/AI-Atlas/?/paths/nlp-foundations#module-2')
+
+    applyFallbackRedirect()
+
+    expect(window.location.pathname).toBe('/AI-Atlas/paths/nlp-foundations')
+    expect(window.location.hash).toBe('#module-2')
+  })
+
+  it('does not add a history entry, so Back still leaves the site', () => {
+    setLocation('/AI-Atlas/?/library')
+    const lengthBefore = window.history.length
+
+    applyFallbackRedirect()
+
+    expect(window.history.length).toBe(lengthBefore)
   })
 })

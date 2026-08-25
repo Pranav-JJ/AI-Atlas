@@ -1,0 +1,574 @@
+[
+  {
+    "id": "foundations",
+    "name": "Foundations",
+    "domain": "foundations",
+    "parentId": null,
+    "short_definition": "The programming, mathematics and data skills that everything else assumes. You do not need all of it before starting machine learning, but gaps here surface later as confusion.",
+    "prerequisiteTopics": [],
+    "order": 0
+  },
+  {
+    "id": "python-for-ai",
+    "name": "Python for AI/ML",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Writing clear Python and using the numerical stack: arrays, dataframes, notebooks, environments and packaging. The practical entry point for almost every other topic here.",
+    "prerequisiteTopics": [],
+    "order": 1
+  },
+  {
+    "id": "linear-algebra",
+    "name": "Linear algebra",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Vectors, matrices, projections and decompositions. It is the language models are written in: an embedding is a vector and a layer is a matrix multiply.",
+    "prerequisiteTopics": [],
+    "order": 2
+  },
+  {
+    "id": "calculus-for-ml",
+    "name": "Calculus for ML",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Derivatives, gradients and the chain rule, aimed squarely at understanding how training works. Enough to read an optimiser, not a full analysis course.",
+    "prerequisiteTopics": ["linear-algebra"],
+    "order": 3
+  },
+  {
+    "id": "probability-statistics",
+    "name": "Probability and statistics",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Distributions, expectation, estimation, uncertainty and hypothesis testing. This is what separates a real result from a number that happened once.",
+    "prerequisiteTopics": [],
+    "order": 4
+  },
+  {
+    "id": "data-handling-visualization",
+    "name": "Data handling and visualisation",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Loading, cleaning, reshaping, joining and plotting data. In practice this is where most of the time on any real project actually goes.",
+    "prerequisiteTopics": ["python-for-ai"],
+    "order": 5
+  },
+  {
+    "id": "algorithms-computational-thinking",
+    "name": "Algorithms and computational thinking",
+    "domain": "foundations",
+    "parentId": "foundations",
+    "short_definition": "Complexity, data structures and decomposing a problem into steps a machine can execute. Matters most when your code has to run over data that no longer fits in memory.",
+    "prerequisiteTopics": ["python-for-ai"],
+    "order": 6
+  },
+
+  {
+    "id": "machine-learning",
+    "name": "Machine Learning",
+    "domain": "machine-learning",
+    "parentId": null,
+    "short_definition": "Learning patterns from data to make predictions or find structure, using models simple enough that you can usually see why they behaved the way they did.",
+    "prerequisiteTopics": ["python-for-ai"],
+    "order": 1
+  },
+  {
+    "id": "supervised-learning",
+    "name": "Supervised learning",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Learning a mapping from inputs to known labels. The setting behind most deployed machine learning, and the one where evaluation is best understood.",
+    "prerequisiteTopics": ["probability-statistics"],
+    "order": 1
+  },
+  {
+    "id": "unsupervised-learning",
+    "name": "Unsupervised learning",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Finding structure in data with no labels: grouping, compressing, and describing what a dataset contains. Powerful, but much harder to evaluate honestly.",
+    "prerequisiteTopics": ["probability-statistics"],
+    "order": 2
+  },
+  {
+    "id": "semi-self-supervised-learning",
+    "name": "Semi- and self-supervised learning",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Getting a training signal from unlabelled data, either by using a little labelled data alongside a lot of unlabelled data, or by inventing a task the data can answer itself.",
+    "prerequisiteTopics": ["supervised-learning", "unsupervised-learning"],
+    "order": 3
+  },
+  {
+    "id": "regression-classification",
+    "name": "Regression and classification",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Predicting a number versus predicting a category. Different loss functions, different metrics, and different ways of being wrong.",
+    "prerequisiteTopics": ["supervised-learning"],
+    "order": 4
+  },
+  {
+    "id": "trees-ensembles",
+    "name": "Trees and ensembles",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Decision trees, random forests and gradient boosting. Still the strongest default for tabular data, and often better than a neural network on it.",
+    "prerequisiteTopics": ["regression-classification"],
+    "order": 5
+  },
+  {
+    "id": "clustering-dimensionality-reduction",
+    "name": "Clustering and dimensionality reduction",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Grouping similar records and projecting high-dimensional data down to something you can plot or model. Easy to run, easy to over-interpret.",
+    "prerequisiteTopics": ["unsupervised-learning", "linear-algebra"],
+    "order": 6
+  },
+  {
+    "id": "feature-engineering",
+    "name": "Feature engineering",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Turning raw records into inputs a model can use: encoding, scaling, aggregating and deriving. Often a bigger lever on accuracy than the choice of model.",
+    "prerequisiteTopics": ["data-handling-visualization"],
+    "order": 7
+  },
+  {
+    "id": "model-selection-validation",
+    "name": "Model selection and validation",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Splitting data, cross-validating, tuning and comparing models without fooling yourself. The discipline that decides whether your reported number means anything.",
+    "prerequisiteTopics": ["supervised-learning", "probability-statistics"],
+    "order": 8
+  },
+  {
+    "id": "interpretability",
+    "name": "Interpretability",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Explaining what a model learned and why it made a given prediction, through inherently readable models or post-hoc attribution methods.",
+    "prerequisiteTopics": ["model-selection-validation"],
+    "order": 9
+  },
+  {
+    "id": "responsible-ml",
+    "name": "Responsible ML",
+    "domain": "machine-learning",
+    "parentId": "machine-learning",
+    "short_definition": "Fairness, harm, consent, transparency and the limits of what a model should be used to decide. A design concern from the first data collection, not a review at the end.",
+    "prerequisiteTopics": ["model-selection-validation"],
+    "order": 10
+  },
+
+  {
+    "id": "deep-learning",
+    "name": "Deep Learning",
+    "domain": "deep-learning",
+    "parentId": null,
+    "short_definition": "Neural networks with many layers, trained end to end by gradient descent. Buys enormous flexibility at the cost of data, compute and interpretability.",
+    "prerequisiteTopics": ["machine-learning", "calculus-for-ml"],
+    "order": 2
+  },
+  {
+    "id": "nn-fundamentals",
+    "name": "Neural-network fundamentals",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Layers, activations, losses and the forward pass. The smallest set of ideas that makes every later architecture legible rather than magical.",
+    "prerequisiteTopics": ["linear-algebra"],
+    "order": 1
+  },
+  {
+    "id": "optimization-backprop",
+    "name": "Optimisation and backpropagation",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "How gradients are computed and applied: the chain rule at scale, plus learning rates, momentum and the practical business of making training converge.",
+    "prerequisiteTopics": ["nn-fundamentals", "calculus-for-ml"],
+    "order": 2
+  },
+  {
+    "id": "cnns-vision",
+    "name": "CNNs and computer vision basics",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Convolutional architectures and the vision tasks that shaped them. Worth understanding even for NLP work, because so much transferable practice originated here.",
+    "prerequisiteTopics": ["optimization-backprop"],
+    "order": 3
+  },
+  {
+    "id": "sequence-modeling",
+    "name": "Sequence modelling",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Handling inputs where order matters and length varies. The problem statement that attention and transformers were invented to answer.",
+    "prerequisiteTopics": ["nn-fundamentals"],
+    "order": 4
+  },
+  {
+    "id": "attention",
+    "name": "Attention",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Letting a model weigh which parts of its input matter for each output position, instead of squeezing everything through one fixed-size state.",
+    "prerequisiteTopics": ["sequence-modeling"],
+    "order": 5
+  },
+  {
+    "id": "transformers",
+    "name": "Transformers",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "The architecture built around self-attention that now underpins most language, vision and multimodal models. Understanding it once explains a great deal.",
+    "prerequisiteTopics": ["attention"],
+    "order": 6
+  },
+  {
+    "id": "transfer-learning",
+    "name": "Transfer learning",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Reusing a model trained on one task as the starting point for another. The reason useful results are reachable without a research budget.",
+    "prerequisiteTopics": ["optimization-backprop"],
+    "order": 7
+  },
+  {
+    "id": "fine-tuning",
+    "name": "Fine-tuning",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Continuing training on your own data to specialise a pretrained model, and knowing when a prompt or a retrieval step would have been sufficient instead.",
+    "prerequisiteTopics": ["transfer-learning"],
+    "order": 8
+  },
+  {
+    "id": "distributed-efficient-training",
+    "name": "Distributed and efficient training",
+    "domain": "deep-learning",
+    "parentId": "deep-learning",
+    "short_definition": "Mixed precision, gradient accumulation, sharding and multi-device training: the techniques that make large models trainable on the hardware you actually have.",
+    "prerequisiteTopics": ["optimization-backprop"],
+    "order": 9
+  },
+
+  {
+    "id": "nlp",
+    "name": "Natural Language Processing",
+    "domain": "nlp",
+    "parentId": null,
+    "short_definition": "Getting computers to work with human language: representing it, modelling it, retrieving from it, generating it, and evaluating whether any of that worked.",
+    "prerequisiteTopics": ["python-for-ai"],
+    "order": 3
+  },
+  {
+    "id": "text-preprocessing-tokenization",
+    "name": "Text preprocessing and tokenisation",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Turning raw text into the discrete units a model consumes: normalisation, segmentation and subword vocabularies. The first place a mental model of an LLM usually breaks.",
+    "prerequisiteTopics": ["python-for-ai"],
+    "order": 1
+  },
+  {
+    "id": "representations-embeddings",
+    "name": "Representations and embeddings",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Mapping tokens, sentences or documents into vectors where geometric closeness reflects meaning. The substrate underneath search, clustering and retrieval.",
+    "prerequisiteTopics": ["text-preprocessing-tokenization", "linear-algebra"],
+    "order": 2
+  },
+  {
+    "id": "language-modeling",
+    "name": "Language modelling",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Learning the probability of text, usually by predicting the next token. The training objective behind essentially every modern generative language model.",
+    "prerequisiteTopics": ["representations-embeddings", "probability-statistics"],
+    "order": 3
+  },
+  {
+    "id": "rnn-seq2seq",
+    "name": "RNNs and sequence-to-sequence models",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "The recurrent and encoder-decoder designs that preceded transformers. Still the clearest way to see why attention was needed at all.",
+    "prerequisiteTopics": ["sequence-modeling"],
+    "order": 4
+  },
+  {
+    "id": "transformers-nlp",
+    "name": "Transformers for NLP",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Applying transformer architectures to language: encoder, decoder and encoder-decoder variants, and which family suits which task.",
+    "prerequisiteTopics": ["transformers", "language-modeling"],
+    "order": 5
+  },
+  {
+    "id": "information-retrieval",
+    "name": "Information retrieval",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Finding the documents that answer a query, from inverted indexes and BM25 through to learned rankers. Older than modern NLP and still indispensable.",
+    "prerequisiteTopics": ["text-preprocessing-tokenization"],
+    "order": 6
+  },
+  {
+    "id": "semantic-search",
+    "name": "Semantic search",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Retrieval by meaning rather than by exact words, using embeddings and vector indexes, usually combined with keyword search rather than replacing it.",
+    "prerequisiteTopics": ["representations-embeddings", "information-retrieval"],
+    "order": 7
+  },
+  {
+    "id": "question-answering",
+    "name": "Question answering",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Returning an answer rather than a list of documents, either by extracting a span from a passage or by generating one from retrieved context.",
+    "prerequisiteTopics": ["information-retrieval"],
+    "order": 8
+  },
+  {
+    "id": "text-classification",
+    "name": "Text classification",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Assigning labels to text: topic, sentiment, intent, routing. The most common NLP task in production, and the best first project.",
+    "prerequisiteTopics": ["representations-embeddings", "supervised-learning"],
+    "order": 9
+  },
+  {
+    "id": "summarization-generation",
+    "name": "Summarisation and generation",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Producing new text conditioned on input. Easy to demo and genuinely hard to evaluate, because many different outputs can be equally correct.",
+    "prerequisiteTopics": ["language-modeling"],
+    "order": 10
+  },
+  {
+    "id": "ner-information-extraction",
+    "name": "NER and information extraction",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Pulling structured records out of unstructured text: entities, relations and attributes. Where language models meet databases.",
+    "prerequisiteTopics": ["text-classification"],
+    "order": 11
+  },
+  {
+    "id": "multilingual-low-resource",
+    "name": "Multilingual and low-resource NLP",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Working in languages with little training data or tooling. A reminder that benchmark results in English do not describe most of the world's languages.",
+    "prerequisiteTopics": ["representations-embeddings"],
+    "order": 12
+  },
+  {
+    "id": "nlp-evaluation-safety",
+    "name": "NLP evaluation and safety",
+    "domain": "nlp",
+    "parentId": "nlp",
+    "short_definition": "Measuring whether a language system is actually good, and what it does when it fails: metrics, human evaluation, bias, and harmful output.",
+    "prerequisiteTopics": ["text-classification", "summarization-generation"],
+    "order": 13
+  },
+
+  {
+    "id": "genai-llm-apps",
+    "name": "Generative AI and LLM applications",
+    "domain": "genai-llm-apps",
+    "parentId": null,
+    "short_definition": "Building useful software on top of large language models you did not train: prompting, retrieval, tools, evaluation, guardrails and the economics of running it.",
+    "prerequisiteTopics": ["nlp"],
+    "order": 4
+  },
+  {
+    "id": "prompt-design",
+    "name": "Prompt design",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Specifying a task to a model precisely enough to get reliable results: instructions, examples, formatting and knowing which failures a prompt cannot fix.",
+    "prerequisiteTopics": ["language-modeling"],
+    "order": 1
+  },
+  {
+    "id": "structured-outputs",
+    "name": "Structured outputs",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Getting machine-readable results out of a text model — schemas, constrained decoding and validation — so the rest of your program can rely on the shape.",
+    "prerequisiteTopics": ["prompt-design"],
+    "order": 2
+  },
+  {
+    "id": "rag",
+    "name": "Retrieval-augmented generation",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Grounding a model's answers in documents you retrieve at query time. Mostly a retrieval and evaluation problem wearing a generation costume.",
+    "prerequisiteTopics": ["semantic-search", "prompt-design"],
+    "order": 3
+  },
+  {
+    "id": "tool-use-agents",
+    "name": "Tool use and agents",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Letting a model call functions, and letting it decide the sequence. Adds real capability and a great deal of failure surface at the same time.",
+    "prerequisiteTopics": ["structured-outputs"],
+    "order": 4
+  },
+  {
+    "id": "context-management",
+    "name": "Context management",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Deciding what goes into a limited context window and what gets summarised, cached or dropped. A systems-design problem, not a prompting trick.",
+    "prerequisiteTopics": ["prompt-design"],
+    "order": 5
+  },
+  {
+    "id": "peft-fine-tuning",
+    "name": "Parameter-efficient fine-tuning",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Adapting a large model by training a small number of extra parameters. Usually the last thing to reach for, after prompting and retrieval have been ruled out.",
+    "prerequisiteTopics": ["fine-tuning"],
+    "order": 6
+  },
+  {
+    "id": "llm-evaluation",
+    "name": "LLM evaluation",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Deciding whether a change made the system better, using task-specific datasets, graders and human review rather than impressions from a handful of prompts.",
+    "prerequisiteTopics": ["nlp-evaluation-safety"],
+    "order": 7
+  },
+  {
+    "id": "guardrails-safety",
+    "name": "Guardrails and safety",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Constraining what a deployed system will say and do: input and output filtering, injection resistance, refusal behaviour and escalation paths.",
+    "prerequisiteTopics": ["llm-evaluation"],
+    "order": 8
+  },
+  {
+    "id": "cost-latency-reliability",
+    "name": "Cost, latency and reliability",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "Making an LLM feature affordable and dependable: caching, batching, model choice, streaming, timeouts and graceful degradation.",
+    "prerequisiteTopics": ["context-management"],
+    "order": 9
+  },
+  {
+    "id": "production-architecture",
+    "name": "Production architecture",
+    "domain": "genai-llm-apps",
+    "parentId": "genai-llm-apps",
+    "short_definition": "How the pieces fit together in a real system: retrieval, orchestration, state, observability and the boundaries between deterministic and probabilistic code.",
+    "prerequisiteTopics": ["rag", "cost-latency-reliability"],
+    "order": 10
+  },
+
+  {
+    "id": "mlops-production",
+    "name": "Production AI and MLOps",
+    "domain": "mlops-production",
+    "parentId": null,
+    "short_definition": "Everything between a working notebook and a system other people depend on: pipelines, packaging, deployment, monitoring, versioning and governance.",
+    "prerequisiteTopics": ["machine-learning"],
+    "order": 5
+  },
+  {
+    "id": "data-feature-pipelines",
+    "name": "Data and feature pipelines",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Moving data reliably and computing the same features at training time and serving time. Skew between those two is a leading cause of silent failure.",
+    "prerequisiteTopics": ["feature-engineering"],
+    "order": 1
+  },
+  {
+    "id": "experiment-tracking",
+    "name": "Experiment tracking",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Recording what you ran, on what data, with which parameters and what came out — so a result can be found again months later and trusted.",
+    "prerequisiteTopics": ["model-selection-validation"],
+    "order": 2
+  },
+  {
+    "id": "model-packaging",
+    "name": "Model packaging",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Turning a trained artefact into something reproducibly loadable elsewhere: serialisation formats, dependencies, and the interface around the weights.",
+    "prerequisiteTopics": ["experiment-tracking"],
+    "order": 3
+  },
+  {
+    "id": "deployment-serving",
+    "name": "Deployment and serving",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Running inference behind an interface others can call, with attention to batching, concurrency, hardware, cold starts and rollout strategy.",
+    "prerequisiteTopics": ["model-packaging"],
+    "order": 4
+  },
+  {
+    "id": "monitoring-drift",
+    "name": "Monitoring and drift",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Noticing when a deployed model degrades because the world moved, not because the code changed. Requires measuring inputs and outcomes, not just uptime.",
+    "prerequisiteTopics": ["deployment-serving"],
+    "order": 5
+  },
+  {
+    "id": "data-model-versioning",
+    "name": "Data and model versioning",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Knowing exactly which data and which weights produced a given prediction, and being able to roll back either one independently.",
+    "prerequisiteTopics": ["experiment-tracking"],
+    "order": 6
+  },
+  {
+    "id": "testing-ai-systems",
+    "name": "Testing AI systems",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Testing components whose output is not deterministic: fixtures, tolerances, behavioural suites, regression sets and where ordinary unit tests still apply.",
+    "prerequisiteTopics": ["model-selection-validation"],
+    "order": 7
+  },
+  {
+    "id": "security-privacy",
+    "name": "Security and privacy",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Protecting training data, model artefacts and user inputs: access control, PII handling, memorisation risk, prompt injection and supply-chain concerns.",
+    "prerequisiteTopics": ["deployment-serving"],
+    "order": 8
+  },
+  {
+    "id": "governance-compliance",
+    "name": "Governance and compliance",
+    "domain": "mlops-production",
+    "parentId": "mlops-production",
+    "short_definition": "Documentation, approval, audit and accountability for automated decisions — including deciding that some decisions should not be automated at all.",
+    "prerequisiteTopics": ["responsible-ml"],
+    "order": 9
+  }
+]

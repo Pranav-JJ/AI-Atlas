@@ -1,0 +1,122 @@
+[
+  {
+    "id": "python-docs",
+    "name": "Python documentation",
+    "kind": "official",
+    "site_url": "https://docs.python.org"
+  },
+  {
+    "id": "numpy",
+    "name": "NumPy",
+    "kind": "official",
+    "site_url": "https://numpy.org"
+  },
+  {
+    "id": "pandas",
+    "name": "pandas",
+    "kind": "official",
+    "site_url": "https://pandas.pydata.org"
+  },
+  {
+    "id": "scikit-learn",
+    "name": "scikit-learn",
+    "kind": "official",
+    "site_url": "https://scikit-learn.org"
+  },
+  {
+    "id": "pytorch",
+    "name": "PyTorch",
+    "kind": "official",
+    "site_url": "https://pytorch.org"
+  },
+  {
+    "id": "hugging-face",
+    "name": "Hugging Face",
+    "kind": "official",
+    "site_url": "https://huggingface.co"
+  },
+  {
+    "id": "spacy",
+    "name": "spaCy (Explosion)",
+    "kind": "official",
+    "site_url": "https://spacy.io"
+  },
+  {
+    "id": "sentence-transformers",
+    "name": "Sentence Transformers",
+    "kind": "official",
+    "site_url": "https://www.sbert.net"
+  },
+  {
+    "id": "mlflow",
+    "name": "MLflow",
+    "kind": "official",
+    "site_url": "https://mlflow.org"
+  },
+  {
+    "id": "google-for-developers",
+    "name": "Google for Developers",
+    "kind": "commercial",
+    "site_url": "https://ai.google"
+  },
+  {
+    "id": "mit-opencourseware",
+    "name": "MIT OpenCourseWare",
+    "kind": "academic",
+    "site_url": "https://ocw.mit.edu"
+  },
+  {
+    "id": "stanford-university",
+    "name": "Stanford University",
+    "kind": "academic",
+    "site_url": "https://www.stanford.edu"
+  },
+  {
+    "id": "brown-university",
+    "name": "Brown University",
+    "kind": "academic",
+    "site_url": "https://brown.edu"
+  },
+  {
+    "id": "arxiv",
+    "name": "arXiv",
+    "kind": "academic",
+    "site_url": "https://arxiv.org"
+  },
+  {
+    "id": "d2l",
+    "name": "Dive into Deep Learning",
+    "kind": "community",
+    "site_url": "https://d2l.ai"
+  },
+  {
+    "id": "three-blue-one-brown",
+    "name": "3Blue1Brown",
+    "kind": "community",
+    "site_url": "https://www.3blue1brown.com"
+  },
+  {
+    "id": "jay-alammar",
+    "name": "Jay Alammar",
+    "kind": "community",
+    "site_url": "https://jalammar.github.io"
+  },
+  {
+    "id": "andrej-karpathy",
+    "name": "Andrej Karpathy",
+    "kind": "community",
+    "site_url": "https://karpathy.ai"
+  },
+  {
+    "id": "christoph-molnar",
+    "name": "Christoph Molnar",
+    "kind": "community",
+    "site_url": "https://christophm.github.io"
+  },
+  {
+    "id": "statlearning",
+    "name": "An Introduction to Statistical Learning",
+    "kind": "academic",
+    "site_url": "https://www.statlearning.com"
+  }
+]

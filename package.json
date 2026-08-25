@@ -9,8 +9,13 @@
   },
   "scripts": {
     "dev": "vite",
+    "predev": "npm run content:build",
     "build": "vite build",
+    "prebuild": "npm run content:build",
     "preview": "vite preview",
+    "preview:pages": "node scripts/pages-emulator.mjs dist",
+    "content:validate": "node scripts/validate-content.ts",
+    "content:build": "node scripts/build-content.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -19,8 +24,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build",
-    "preview:pages": "node scripts/pages-emulator.mjs dist"
+    "verify": "npm run format:check && npm run content:validate && npm run content:build && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
     "minisearch": "^7.2.0",

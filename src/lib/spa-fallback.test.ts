@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { decodeFallbackUrl, encodeFallbackUrl } from './spa-fallback.ts'
 
-const BASE = '/ai-atlas/'
+const BASE = '/AI-Atlas/'
 
 /** Full round trip: what 404.html produces, fed back through what the app consumes. */
 function roundTrip(base: string, url: string): string {
@@ -27,24 +27,24 @@ function roundTrip(base: string, url: string): string {
 
 describe('encodeFallbackUrl', () => {
   it('encodes a plain deep route', () => {
-    expect(encodeFallbackUrl(BASE, '/ai-atlas/library', '', '')).toBe('/ai-atlas/?/library')
+    expect(encodeFallbackUrl(BASE, '/AI-Atlas/library', '', '')).toBe('/AI-Atlas/?/library')
   })
 
   it('moves the query string behind an & separator', () => {
-    expect(encodeFallbackUrl(BASE, '/ai-atlas/library', '?q=nlp', '')).toBe(
-      '/ai-atlas/?/library&q=nlp',
+    expect(encodeFallbackUrl(BASE, '/AI-Atlas/library', '?q=nlp', '')).toBe(
+      '/AI-Atlas/?/library&q=nlp',
     )
   })
 
   it('escapes ampersands in the original query so they survive the round trip', () => {
-    expect(encodeFallbackUrl(BASE, '/ai-atlas/library', '?q=nlp&type=video', '')).toBe(
-      '/ai-atlas/?/library&q=nlp~and~type=video',
+    expect(encodeFallbackUrl(BASE, '/AI-Atlas/library', '?q=nlp&type=video', '')).toBe(
+      '/AI-Atlas/?/library&q=nlp~and~type=video',
     )
   })
 
   it('preserves the hash', () => {
-    expect(encodeFallbackUrl(BASE, '/ai-atlas/library', '?q=nlp', '#results')).toBe(
-      '/ai-atlas/?/library&q=nlp#results',
+    expect(encodeFallbackUrl(BASE, '/AI-Atlas/library', '?q=nlp', '#results')).toBe(
+      '/AI-Atlas/?/library&q=nlp#results',
     )
   })
 
@@ -55,30 +55,30 @@ describe('encodeFallbackUrl', () => {
 
 describe('decodeFallbackUrl', () => {
   it('returns null for a normal visit with no query', () => {
-    expect(decodeFallbackUrl('/ai-atlas/', '', '')).toBeNull()
+    expect(decodeFallbackUrl('/AI-Atlas/', '', '')).toBeNull()
   })
 
   it('returns null for a normal query string that is not a fallback', () => {
-    expect(decodeFallbackUrl('/ai-atlas/library', '?q=nlp', '')).toBeNull()
+    expect(decodeFallbackUrl('/AI-Atlas/library', '?q=nlp', '')).toBeNull()
   })
 
   it('restores a route with query and hash', () => {
-    expect(decodeFallbackUrl('/ai-atlas/', '?/library&q=nlp~and~type=video', '#results')).toBe(
-      '/ai-atlas/library?q=nlp&type=video#results',
+    expect(decodeFallbackUrl('/AI-Atlas/', '?/library&q=nlp~and~type=video', '#results')).toBe(
+      '/AI-Atlas/library?q=nlp&type=video#results',
     )
   })
 })
 
 describe('round trip', () => {
   const cases = [
-    '/ai-atlas/library',
-    '/ai-atlas/library?q=nlp',
-    '/ai-atlas/library?q=nlp&type=video&difficulty=beginner',
-    '/ai-atlas/library?q=nlp&type=video#results',
-    '/ai-atlas/paths/nlp-foundations',
-    '/ai-atlas/library/res-some-resource-id?from=dashboard',
+    '/AI-Atlas/library',
+    '/AI-Atlas/library?q=nlp',
+    '/AI-Atlas/library?q=nlp&type=video&difficulty=beginner',
+    '/AI-Atlas/library?q=nlp&type=video#results',
+    '/AI-Atlas/paths/nlp-foundations',
+    '/AI-Atlas/library/res-some-resource-id?from=dashboard',
     // The filter state that Phase 4 puts in the URL — the real reason this matters.
-    '/ai-atlas/library?q=attention&topic=nlp&topic=transformers&cost=free&sort=curated',
+    '/AI-Atlas/library?q=attention&topic=nlp&topic=transformers&cost=free&sort=curated',
   ]
 
   it.each(cases)('restores %s exactly', (url) => {

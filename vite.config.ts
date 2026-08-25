@@ -11,18 +11,22 @@ import { encodeFallbackUrl } from './src/lib/spa-fallback.ts'
 import { STATIC_ROUTES } from './src/routes-manifest.ts'
 
 /**
- * GitHub Pages serves this site from a subpath (https://<user>.github.io/ai-atlas/),
- * so every asset and route reference must be base-aware.
+ * GitHub Pages serves this site from a subpath, so every asset and route
+ * reference must be base-aware.
  *
- * VITE_BASE_PATH is the single place that changes if the repo is renamed, moved to
- * a user/org root site, or pointed at a custom domain (all of which use '/').
- * It must have a leading AND trailing slash.
+ * Target: https://pranav-jj.github.io/AI-Atlas/
+ * (GitHub lowercases the username in the hostname but preserves the repository
+ * name's case in the path, so the base is '/AI-Atlas/', not '/ai-atlas/'.)
+ *
+ * This value is only the LOCAL default. CI overrides it from
+ * actions/configure-pages, so renaming the repository or adding a custom domain
+ * needs no code change here. It must have a leading AND trailing slash.
  */
-const basePath = process.env.VITE_BASE_PATH ?? '/ai-atlas/'
+const basePath = process.env.VITE_BASE_PATH ?? '/AI-Atlas/'
 
 if (!basePath.startsWith('/') || !basePath.endsWith('/')) {
   throw new Error(
-    `VITE_BASE_PATH must have a leading and trailing slash (e.g. "/ai-atlas/" or "/"), got "${basePath}"`,
+    `VITE_BASE_PATH must have a leading and trailing slash (e.g. "/AI-Atlas/" or "/"), got "${basePath}"`,
   )
 }
 

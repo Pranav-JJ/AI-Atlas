@@ -2,16 +2,16 @@
  * GitHub Pages SPA deep-link fallback.
  *
  * Pages is a static file server with no rewrite rules. A request for
- * `/ai-atlas/library?q=nlp` finds no such file and serves `404.html`.
+ * `/AI-Atlas/library?q=nlp` finds no such file and serves `404.html`.
  *
  * The workaround: `404.html` encodes the requested route into the query string
  * and redirects to `index.html`, which decodes it back and rewrites history
  * before the router ever reads `location`. The user sees one redirect and lands
  * on the right route with query and hash intact.
  *
- *   requested   /ai-atlas/library?q=nlp&type=video#results
- *   encoded     /ai-atlas/?/library&q=nlp~and~type=video#results
- *   decoded     /ai-atlas/library?q=nlp&type=video#results
+ *   requested   /AI-Atlas/library?q=nlp&type=video#results
+ *   encoded     /AI-Atlas/?/library&q=nlp~and~type=video#results
+ *   decoded     /AI-Atlas/library?q=nlp&type=video#results
  *
  * `&` is escaped to `~and~` because the encoded form uses `&` as its own
  * separator between the path and the original query.
@@ -28,7 +28,7 @@ const AMPERSAND_ESCAPE = '~and~'
 /**
  * Runs in 404.html. Builds the `<base>/?/<route>` URL to redirect to.
  *
- * @param base     the Vite base path, with leading and trailing slash ('/ai-atlas/' or '/')
+ * @param base     the Vite base path, with leading and trailing slash ('/AI-Atlas/' or '/')
  * @param pathname the requested pathname
  * @param search   the requested query string, including '?' (or '')
  * @param hash     the requested hash, including '#' (or '')

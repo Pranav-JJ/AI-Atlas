@@ -12,7 +12,7 @@
  *
  * Usage:
  *   npm run build
- *   node scripts/pages-emulator.mjs dist /ai-atlas/ 4180
+ *   node scripts/pages-emulator.mjs dist /AI-Atlas/ 4180
  *
  * Expected:
  *   /                    200  (dist/index.html)
@@ -26,7 +26,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 
 const ROOT = process.argv[2] ?? 'dist'
-const BASE = process.argv[3] ?? '/ai-atlas/'
+const BASE = process.argv[3] ?? '/AI-Atlas/'
 const PORT = Number(process.argv[4] ?? 4180)
 
 const CONTENT_TYPES = {

@@ -16,7 +16,7 @@ Requires **Node >= 22** (developed against v22.21.1) and npm.
 
 ```bash
 npm ci          # or `npm install` on first clone
-npm run dev     # http://localhost:5173/ai-atlas/
+npm run dev     # http://localhost:5173/AI-Atlas/
 ```
 
 ## Scripts
@@ -53,13 +53,13 @@ React SPA (Vite) ─ React Router (basename) ─ route chunks ──────
 
 ## Deployment and the base path
 
-The site is served from a subpath: `https://<user>.github.io/ai-atlas/`.
+The site is served from a subpath: `https://pranav-jj.github.io/AI-Atlas/`.
 
 `VITE_BASE_PATH` in [`vite.config.ts`](vite.config.ts) is the **single** place this is configured. It needs a leading and trailing slash.
 
 | Target | Value |
 | --- | --- |
-| Project site (default) | `/ai-atlas/` |
+| Project site (this repo) | `/AI-Atlas/` |
 | User/org root site, or custom domain | `/` |
 
 ```bash
@@ -72,7 +72,7 @@ GitHub Pages setup is **manual** (the `gh` CLI is not installed in this environm
 2. **Settings → Pages → Source → GitHub Actions.**
 3. Push to `main`. [`deploy.yml`](.github/workflows/deploy.yml) builds and publishes `dist/`, then smoke-tests the live URL.
 
-The deploy workflow takes the base path from `actions/configure-pages`, so **renaming the repository or adding a custom domain needs no code change** — only the local default in `vite.config.ts` is `/ai-atlas/`.
+The deploy workflow takes the base path from `actions/configure-pages`, so **renaming the repository or adding a custom domain needs no code change** — only the local default in `vite.config.ts` is `/AI-Atlas/`.
 
 ### How routing survives a static host
 
@@ -93,7 +93,7 @@ The redirect logic lives in [`src/lib/spa-fallback.ts`](src/lib/spa-fallback.ts)
 
 ```bash
 npm run build
-npm run preview:pages   # http://localhost:4180/ai-atlas/
+npm run preview:pages   # http://localhost:4180/AI-Atlas/
 ```
 
 Expected: `/` and `/about` return **200**; `/library?q=nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.

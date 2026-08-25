@@ -1,0 +1,119 @@
+/*
+ * AI Atlas design tokens — the single source of truth for colour.
+ *
+ * Three theme states, per the plan (§E):
+ *   1. :root                                    -> light (complete palette, always defined)
+ *   2. :root:not([data-theme='light']) @media   -> system dark
+ *   3. :root[data-theme='dark']                 -> explicit dark (wins over system)
+ *
+ * Rule: no colour may have its ONLY definition inside a media or [data-theme] block.
+ * Light is complete on bare :root; dark only ever *overrides*.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-subtle: #f4f5f8;
+  --surface-raised: #ffffff;
+
+  /* Text */
+  --fg: #16181d;
+  --fg-muted: #5c6270;
+  --fg-subtle: #767c8b;
+
+  /* Lines */
+  --border: #e3e5ea;
+  --border-strong: #c9ccd4;
+
+  /* Accent — exactly one. No gradients, no secondary brand colour. */
+  --accent: #2f5fe0;
+  --accent-hover: #2650c4;
+  --accent-fg: #ffffff;
+  --accent-subtle: #eef2fd;
+
+  /* Verification status. These carry meaning, so they are never decorative. */
+  --ok: #1f7a4d;
+  --ok-subtle: #e8f5ee;
+  --warn: #8a5a00;
+  --warn-subtle: #fdf3e0;
+  --danger: #b3261e;
+  --danger-subtle: #fdeceb;
+
+  /* Focus ring — >=3:1 against every surface it can land on. */
+  --focus: #2f5fe0;
+  --focus-offset: var(--bg);
+
+  /* Shape and rhythm */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --measure: 72ch;
+  --shell-max: 1280px;
+}
+
+:root:not([data-theme='light']) {
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+
+    --bg: #0e1014;
+    --surface: #16191f;
+    --surface-subtle: #1c2029;
+    --surface-raised: #1c2029;
+
+    --fg: #e8eaf0;
+    --fg-muted: #9aa1b1;
+    --fg-subtle: #838b9c;
+
+    --border: #262b35;
+    --border-strong: #39414f;
+
+    --accent: #7ea1ff;
+    --accent-hover: #9ab5ff;
+    --accent-fg: #0e1014;
+    --accent-subtle: #1a2540;
+
+    --ok: #5cc98d;
+    --ok-subtle: #10281c;
+    --warn: #e0b25c;
+    --warn-subtle: #2a2110;
+    --danger: #ef8a83;
+    --danger-subtle: #2d1513;
+
+    --focus: #7ea1ff;
+    --focus-offset: var(--bg);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0e1014;
+  --surface: #16191f;
+  --surface-subtle: #1c2029;
+  --surface-raised: #1c2029;
+
+  --fg: #e8eaf0;
+  --fg-muted: #9aa1b1;
+  --fg-subtle: #838b9c;
+
+  --border: #262b35;
+  --border-strong: #39414f;
+
+  --accent: #7ea1ff;
+  --accent-hover: #9ab5ff;
+  --accent-fg: #0e1014;
+  --accent-subtle: #1a2540;
+
+  --ok: #5cc98d;
+  --ok-subtle: #10281c;
+  --warn: #e0b25c;
+  --warn-subtle: #2a2110;
+  --danger: #ef8a83;
+  --danger-subtle: #2d1513;
+
+  --focus: #7ea1ff;
+  --focus-offset: var(--bg);
+}

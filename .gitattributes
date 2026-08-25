@@ -1,0 +1,21 @@
+# Normalise line endings to LF in the repository and in the working copy.
+#
+# Without this, Git on Windows checks files out as CRLF while Prettier is
+# configured with `endOfLine: "lf"`, so `npm run format:check` fails on a fresh
+# clone — and CI and local dev disagree about a file nobody edited.
+* text=auto eol=lf
+
+# Binary assets must never be normalised.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+# Generated; collapse in PR diffs so content changes stay reviewable.
+package-lock.json linguist-generated=true -diff

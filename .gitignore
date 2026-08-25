@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+
+# Build output: content is compiled from content/*.json into typed TS modules.
+# The generated modules are never committed — content/ is the source of truth.
+src/content/generated/
+
+*.local
+.env
+.env.*
+!.env.example
+
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+*.log
+npm-debug.log*
+.eslintcache
+.vite/

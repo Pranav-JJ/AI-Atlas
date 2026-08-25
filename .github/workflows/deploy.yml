@@ -86,22 +86,42 @@ jobs:
           set -euo pipefail
           echo "Testing $PAGE_URL"
 
-          home_status=$(curl -sS -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "$PAGE_URL")
+          # -L throughout: Pages 301-redirects a directory URL to its canonical
+          # trailing-slash form (/about -> /about/). That redirect is correct
+          # behaviour, so the assertion is on where you END UP, not the first hop.
+          home_status=$(curl -sSL -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "$PAGE_URL")
           echo "  home            -> $home_status"
           [ "$home_status" = "200" ] || { echo "::error::Home page returned $home_status"; exit 1; }
 
-          # /about is pre-rendered as a real file, so it must be a true 200 —
-          # not a 404 that happens to render correctly after a client redirect.
-          about_status=$(curl -sS -o /dev/null -w '%{http_code}' "${PAGE_URL}about")
+          about_status=$(curl -sSL -o /dev/null -w '%{http_code}' "${PAGE_URL}about")
           echo "  /about          -> $about_status"
           [ "$about_status" = "200" ] || { echo "::error::Deep link /about returned $about_status"; exit 1; }
 
-          # An unknown/dynamic path must serve the SPA fallback, which redirects
-          # rather than showing GitHub's generic 404. Pages returns HTTP 404 with
-          # that body, which is correct — assert on the body, not the status.
-          fallback=$(curl -sS "${PAGE_URL}definitely-not-a-real-route")
-          echo "$fallback" | grep -q 'encodeFallbackUrl' \
-            || { echo "::error::Unknown route did not serve the SPA fallback page"; exit 1; }
+          # A 200 alone does not prove pre-rendering worked — the SPA fallback can
+          # also produce a page that eventually renders. What proves it is that
+          # /about serves the real app HTML and NOT the redirector.
+          if curl -sSL "${PAGE_URL}about" | grep -q 'encodeFallbackUrl'; then
+            echo "::error::/about served the SPA redirector, so it was not pre-rendered"
+            exit 1
+          fi
+          echo "  /about          -> pre-rendered app HTML (not the redirector)"
+
+          # An unknown/dynamic path must serve the SPA fallback rather than
+          # GitHub's generic 404. Pages returns HTTP 404 with that body, which is
+          # correct and is what makes deep links work — assert on body, not status.
+          if ! curl -sS "${PAGE_URL}definitely-not-a-real-route" | grep -q 'encodeFallbackUrl'; then
+            echo "::error::Unknown route did not serve the SPA fallback page"
+            exit 1
+          fi
           echo "  unknown route   -> SPA fallback served"
+
+          # The bundle must be reachable at the base path. A wrong base is the
+          # classic Pages failure: the HTML loads and the page renders blank.
+          asset=$(curl -sSL "$PAGE_URL" | grep -oE '/[^"]*/assets/[^"]*\.js' | head -1)
+          [ -n "$asset" ] || { echo "::error::No JS asset reference found in the served HTML"; exit 1; }
+          origin=$(printf '%s' "$PAGE_URL" | sed -E 's|^(https?://[^/]+).*|\1|')
+          asset_status=$(curl -sSL -o /dev/null -w '%{http_code}' "${origin}${asset}")
+          echo "  $asset -> $asset_status"
+          [ "$asset_status" = "200" ] || { echo "::error::JS bundle returned $asset_status (base path wrong?)"; exit 1; }
 
           echo "Smoke test passed."

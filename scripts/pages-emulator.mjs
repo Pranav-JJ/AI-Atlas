@@ -6,9 +6,14 @@
  * one thing most likely to go wrong on this host. This server reproduces what
  * Pages actually does:
  *
- *   - exact file match          -> 200
- *   - directory with index.html -> 200
- *   - anything else             -> 404.html, with an HTTP 404 status
+ *   - exact file match                  -> 200
+ *   - directory, URL lacks trailing '/' -> 301 to the canonical '<path>/'
+ *   - directory with index.html         -> 200
+ *   - anything else                     -> 404.html, with an HTTP 404 status
+ *
+ * The 301 matters: an earlier version of this emulator resolved directories
+ * directly and reported 200, which hid a real bug in the deploy smoke test that
+ * only surfaced against production. Emulating the redirect is the whole point.
  *
  * Usage:
  *   npm run build
@@ -16,7 +21,7 @@
  *
  * Expected:
  *   /                    200  (dist/index.html)
- *   /about               200  (pre-rendered, dist/about/index.html)
+ *   /about               301  -> /about/ then 200 (pre-rendered)
  *   /library?q=nlp       404  serving the redirector, which restores the URL
  *
  * Development tool only — never deployed, and not part of the build.
@@ -40,14 +45,15 @@ const CONTENT_TYPES = {
   '.woff2': 'font/woff2',
 }
 
+/** Returns { file, viaDirectoryIndex } or null when nothing matches. */
 async function resolveFile(candidate) {
   try {
     const stats = await stat(candidate)
-    if (stats.isFile()) return candidate
+    if (stats.isFile()) return { file: candidate, viaDirectoryIndex: false }
 
     if (stats.isDirectory()) {
       const index = join(candidate, 'index.html')
-      if ((await stat(index)).isFile()) return index
+      if ((await stat(index)).isFile()) return { file: index, viaDirectoryIndex: true }
     }
   } catch {
     // Not found: fall through to the 404 handler.
@@ -65,13 +71,20 @@ const server = createServer(async (req, res) => {
   }
 
   const relative = url.pathname.slice(BASE.length)
-  const file = await resolveFile(join(ROOT, relative || 'index.html'))
+  const resolved = await resolveFile(join(ROOT, relative || 'index.html'))
 
-  if (file) {
+  if (resolved) {
+    // GitHub Pages normalises a directory URL to its trailing-slash form first.
+    if (resolved.viaDirectoryIndex && !url.pathname.endsWith('/')) {
+      res.writeHead(301, { location: `${url.pathname}/${url.search}` })
+      res.end()
+      return
+    }
+
     res.writeHead(200, {
-      'content-type': CONTENT_TYPES[extname(file)] ?? 'application/octet-stream',
+      'content-type': CONTENT_TYPES[extname(resolved.file)] ?? 'application/octet-stream',
     })
-    res.end(await readFile(file))
+    res.end(await readFile(resolved.file))
     return
   }
 

@@ -1,3 +1,5 @@
+import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
+
 /**
  * Methodology, source policy, and privacy.
  *
@@ -7,6 +9,11 @@
  * instead of a stub that pretends to be a feature.
  */
 export function About() {
+  useDocumentMeta(
+    'Methodology and source policy',
+    'How AI Atlas selects resources, what "verified" means, how ranking and progress are calculated, and what happens to your data.',
+  )
+
   return (
     <>
       <h1 className="text-fg text-3xl font-semibold tracking-tight">

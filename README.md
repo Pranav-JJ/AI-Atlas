@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 2.** Toolchain, deployment pipeline and the content pipeline are in place, with a validated catalogue of 124 records. The library UI, search and progress tracking do not exist yet. See the roadmap below.
+> **Status: Phase 3.** The app shell, design system and topic map are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Search, filtering, bookmarks, progress tracking and learning paths do not exist yet. See the roadmap below.
 
 ---
 
@@ -36,7 +36,7 @@ npm run dev     # http://localhost:5173/AI-Atlas/
 | `npm test` | Vitest, single run |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run test:coverage` | Coverage over `src/lib/**` |
-| **`npm run verify`** | **format:check → lint → typecheck → test → build.** This is exactly what CI runs. |
+| **`npm run verify`** | **format:check → content:validate → content:build → lint → typecheck → test → build.** This is exactly what CI runs. |
 
 ## Architecture at a glance
 
@@ -82,8 +82,8 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
-| Dynamic (`/library/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
+| Known at build time (`/`, `/topics`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Dynamic (`/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
 
@@ -98,7 +98,7 @@ npm run build
 npm run preview:pages   # http://localhost:4180/AI-Atlas/
 ```
 
-Expected: `/` and `/about` return **200**; `/library?q=nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
+Expected: `/`, `/topics` and `/about` return **200** (a bare directory URL 301s to its trailing-slash form first); `/topics/nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
 
 ## Content
 
@@ -121,6 +121,27 @@ Content is compiled into typed TypeScript rather than fetched as JSON at runtime
 These are validation rules, not conventions — `npm run content:validate` fails, and it is a required CI check. Every one of the 14 rules has a test proving it **rejects a deliberately broken fixture** with a message naming the file and the record. A validation rule with no failing test is a rule nobody has checked actually fires.
 
 Note that **an automated link check is not verification.** A script confirming HTTP 200 proves a server answered; it says nothing about whether the page still matches how we described it. Scripts may only produce `unverified` drafts for human review.
+
+## Design system and accessibility
+
+Colour is defined once, as CSS custom properties in [`src/styles/tokens.css`](src/styles/tokens.css), and consumed through Tailwind utilities. Three theme states, not two — `system` is genuinely distinct from an explicit choice, because it must keep following the OS setting if that changes later.
+
+A render-blocking script in `<head>` applies a stored theme before first paint, so dark-mode users get no white flash. It is injected by a Vite plugin from [`src/lib/theme.ts`](src/lib/theme.ts) rather than pasted into `index.html`, so the storage key cannot drift from the module that owns it.
+
+### Contrast is tested, not asserted
+
+axe-core cannot check colour contrast under jsdom — there is no layout or paint engine. So [`src/lib/contrast.test.ts`](src/lib/contrast.test.ts) parses `tokens.css` and computes WCAG ratios directly against the token values, for **every** foreground/background pair that actually occurs in the UI, in **both** themes. It also asserts that the system-dark and explicit-dark blocks stay identical, and that no colour is defined only inside a theme block.
+
+Body text must clear **4.5:1**. Boundaries that identify a control must clear **3:1** — that is what `--border-interactive` is for. `--border` and `--border-strong` are decorative separators and deliberately do not meet that bar; using them on a form control is a bug.
+
+### Other accessibility guarantees, each covered by a test
+
+- Zero critical or serious axe violations on every route.
+- Exactly one `<h1>` per page, and heading levels never skip.
+- Skip-to-content link is first in the tab order and targets the `<main>` landmark.
+- No positive `tabindex` anywhere; the only `tabindex="-1"` is inside the `aria-hidden` mobile nav, which mirrors links that are reachable in the header.
+- External links always carry `rel="noopener noreferrer"` and announce that they open a new tab.
+- `prefers-reduced-motion` disables all transitions and the skeleton shimmer.
 
 ## Dependency pinning notes
 
@@ -161,8 +182,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 0 | Toolchain bootstrap | ✅ Done |
 | 1 | GitHub Pages pipeline (deploy early to de-risk base paths) | ✅ Done |
 | 2 | Content schema, Zod validation, build pipeline | ✅ Done |
-| 3 | Design system, app shell, routing | Next |
-| 4 | Resource library — search, filter, sort, detail | |
+| 3 | Design system, app shell, routing | ✅ Done |
+| 4 | Resource library — search, filter, sort, detail | Next |
 | 5 | Local user state — bookmarks, completion, profile | |
 | 6 | Dashboard | |
 | 7 | Learning paths and progress | ← **MVP ends here** |

@@ -22,11 +22,18 @@
   /* Text */
   --fg: #16181d;
   --fg-muted: #5c6270;
-  --fg-subtle: #767c8b;
+  --fg-subtle: #6b7180;
 
   /* Lines */
   --border: #e3e5ea;
   --border-strong: #c9ccd4;
+  /*
+   * Boundaries that IDENTIFY a control (inputs, checkboxes, toggles) and so must
+   * clear 3:1 under WCAG 1.4.11. --border and --border-strong are decorative
+   * separators and deliberately do not meet that bar; using them on a form
+   * control is a bug. See src/lib/contrast.test.ts.
+   */
+  --border-interactive: #80858f;
 
   /* Accent — exactly one. No gradients, no secondary brand colour. */
   --accent: #2f5fe0;
@@ -52,6 +59,19 @@
   --radius-lg: 12px;
   --measure: 72ch;
   --shell-max: 1280px;
+
+  /*
+   * Stacking order, named so it can be reasoned about in one place.
+   * Deliberately sparse: every arbitrary z-index in a component is a future
+   * bug where two things fight over the same layer.
+   */
+  --z-header: 40;
+  --z-sheet: 60;
+  --z-toast: 80;
+
+  /* Motion. Both are disabled wholesale under prefers-reduced-motion. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
 }
 
 :root:not([data-theme='light']) {
@@ -69,6 +89,7 @@
 
     --border: #262b35;
     --border-strong: #39414f;
+    --border-interactive: #6e7787;
 
     --accent: #7ea1ff;
     --accent-hover: #9ab5ff;
@@ -101,6 +122,7 @@
 
   --border: #262b35;
   --border-strong: #39414f;
+  --border-interactive: #6e7787;
 
   --accent: #7ea1ff;
   --accent-hover: #9ab5ff;

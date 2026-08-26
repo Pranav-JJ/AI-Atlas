@@ -8,6 +8,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
 
 import { encodeFallbackUrl } from './src/lib/spa-fallback.ts'
+import { NO_FLASH_SCRIPT } from './src/lib/theme.ts'
 import { STATIC_ROUTES } from './src/routes-manifest.ts'
 
 /**
@@ -74,6 +75,38 @@ function spaFallback404(base: string): Plugin {
 }
 
 /**
+ * Injects the theme bootstrap into <head>, before any stylesheet or script.
+ *
+ * It must run render-blocking: otherwise the browser paints the default light
+ * palette and React corrects it a moment later, which a dark-mode user sees as a
+ * white flash on every single page load.
+ *
+ * Injected from src/lib/theme.ts rather than pasted into index.html so the
+ * storage key and the logic cannot drift from the module that owns them.
+ */
+function themeBootstrap(): Plugin {
+  return {
+    name: 'ai-atlas:theme-bootstrap',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        return {
+          html,
+          tags: [
+            {
+              tag: 'script',
+              attrs: { 'data-theme-bootstrap': '' },
+              children: NO_FLASH_SCRIPT,
+              injectTo: 'head-prepend',
+            },
+          ],
+        }
+      },
+    },
+  }
+}
+
+/**
  * Pre-renders known routes as real files so GitHub Pages serves them with a 200
  * instead of routing them through the 404 fallback. See src/routes-manifest.ts.
  */
@@ -106,7 +139,13 @@ function staticRoutes(routes: readonly string[]): Plugin {
 
 export default defineConfig({
   base: basePath,
-  plugins: [react(), tailwindcss(), spaFallback404(basePath), staticRoutes(STATIC_ROUTES)],
+  plugins: [
+    react(),
+    tailwindcss(),
+    themeBootstrap(),
+    spaFallback404(basePath),
+    staticRoutes(STATIC_ROUTES),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

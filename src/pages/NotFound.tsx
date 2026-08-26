@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router'
 
+import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
+
 /**
  * Rendered for any unmatched route.
  *
@@ -9,6 +11,8 @@ import { Link, useLocation } from 'react-router'
  */
 export function NotFound() {
   const { pathname } = useLocation()
+
+  useDocumentMeta('Page not found')
 
   return (
     <>
@@ -21,13 +25,16 @@ export function NotFound() {
       </p>
 
       <p className="text-fg-muted mt-3 leading-relaxed">
-        Most of AI Atlas has not been built yet — the site is at Phase 1 of its roadmap, so this is
-        far more likely to be a page that does not exist yet than a broken link.
+        Much of AI Atlas has not been built yet, so this is far more likely to be a page that does
+        not exist yet than a broken link. The topic map and methodology pages are live.
       </p>
 
-      <p className="mt-6">
+      <p className="mt-6 flex flex-wrap gap-4">
         <Link to="/" className="text-accent underline underline-offset-2">
           Go to the home page
+        </Link>
+        <Link to="/topics" className="text-accent underline underline-offset-2">
+          Browse the topic map
         </Link>
       </p>
     </>

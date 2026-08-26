@@ -1,34 +1,39 @@
-import { Route, Routes } from 'react-router'
+import { Route, Routes, useLocation } from 'react-router'
 
+import { AppShell } from './app/AppShell.tsx'
+import { ErrorBoundary } from './components/index.ts'
 import { About } from './pages/About.tsx'
 import { Home } from './pages/Home.tsx'
 import { NotFound } from './pages/NotFound.tsx'
+import { TopicDetail } from './pages/TopicDetail.tsx'
+import { Topics } from './pages/Topics.tsx'
 
 /**
  * Route table.
  *
- * Only routes that render something real are declared. Stub routes for pages
- * that do not exist yet are deliberately omitted — an empty page behind a working
- * link is worse than an honest 404. The remaining routes arrive with their
- * features in Phases 3 to 7.
+ * Only routes that render real content are declared. Stub routes for features
+ * that do not exist yet are deliberately omitted — an empty page behind a
+ * working link is worse than an honest 404, because it costs the user a click
+ * to discover the same thing.
+ *
+ * Library, paths and progress arrive in Phases 4 to 7.
  */
 export function App() {
-  return (
-    <>
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
+  const { pathname } = useLocation()
 
-      <main
-        id="main"
-        className="mx-auto flex min-h-dvh max-w-[var(--measure)] flex-col justify-center px-6 py-16"
-      >
+  return (
+    <AppShell>
+      {/* Keyed by route so a crash on one page clears when the user navigates
+          away, instead of leaving the boundary stuck on every subsequent page. */}
+      <ErrorBoundary resetKey={pathname}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/topics" element={<Topics />} />
+          <Route path="/topics/:topicId" element={<TopicDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </main>
-    </>
+      </ErrorBoundary>
+    </AppShell>
   )
 }

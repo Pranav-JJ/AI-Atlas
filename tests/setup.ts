@@ -1,7 +1,15 @@
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterEach } from 'vitest'
 
 import '@testing-library/jest-dom/vitest'
+
+/*
+ * Testing Library's 1s default for findBy* is too tight for this app: routes
+ * are code-split, so a page render resolves a dynamic import first, and that is
+ * measurably slower when the whole suite runs in parallel. Raising it once here
+ * beats scattering per-assertion timeouts, which hide the reason.
+ */
+configure({ asyncUtilTimeout: 5000 })
 
 afterEach(() => {
   cleanup()

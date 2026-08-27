@@ -16,10 +16,10 @@
  * KEEP IN SYNC with the route table in src/App.tsx. The test in
  * src/routes-manifest.test.ts fails if a route is declared here but not routed.
  */
-export const STATIC_ROUTES = ['/', '/topics', '/about'] as const
+export const STATIC_ROUTES = ['/', '/library', '/topics', '/about'] as const
 
 /**
- * Dynamic routes such as /topics/:topicId are NOT pre-rendered. They are served
+ * Dynamic routes such as /topics/:topicId and /library/:resourceId are NOT pre-rendered. They are served
  * by the 404.html fallback, which costs one redirect but keeps the build free of
  * a dependency on generated content. Pre-rendering every topic page is a Phase 13
  * (SEO and performance) decision, to be made against measurement rather than

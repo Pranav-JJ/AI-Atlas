@@ -160,6 +160,14 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
+    /*
+     * Well above the 5s default. Two things in this suite are legitimately slow
+     * and neither indicates a problem: axe-core scanning a full page of results
+     * in jsdom, and code-split routes resolving a dynamic import. Both get
+     * slower again when files run in parallel. Durations are still reported, so
+     * a genuine regression remains visible.
+     */
+    testTimeout: 30_000,
     include: ['src/**/*.{test,spec}.{ts,tsx}', 'tests/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       provider: 'v8',

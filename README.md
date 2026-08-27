@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 3.** The app shell, design system and topic map are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Search, filtering, bookmarks, progress tracking and learning paths do not exist yet. See the roadmap below.
+> **Status: Phase 4.** The resource library — search, 11 filters, sorting and detail pages — is live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Bookmarks, progress tracking and learning paths do not exist yet. See the roadmap below.
 
 ---
 
@@ -82,8 +82,8 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/topics`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
-| Dynamic (`/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
+| Known at build time (`/`, `/library`, `/topics`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Dynamic (`/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
 
@@ -121,6 +121,28 @@ Content is compiled into typed TypeScript rather than fetched as JSON at runtime
 These are validation rules, not conventions — `npm run content:validate` fails, and it is a required CI check. Every one of the 14 rules has a test proving it **rejects a deliberately broken fixture** with a message naming the file and the record. A validation rule with no failing test is a rule nobody has checked actually fires.
 
 Note that **an automated link check is not verification.** A script confirming HTTP 200 proves a server answered; it says nothing about whether the page still matches how we described it. Scripts may only produce `unverified` drafts for human review.
+
+## The resource library
+
+The library is the product's core surface. Three rules shape it:
+
+**The URL is the source of truth.** Every filter, the query, the sort and the page size live in the query string, so a filtered view is shareable, survives a reload, and is correct under the back button. A URL is user-editable, so unknown or malformed values are *dropped* rather than rejected — a stray parameter narrows the view at worst, never produces an error page.
+
+**Search and filtering are independent.** Text relevance decides what is *relevant*; facets decide what is *admissible*. Search runs first and returns ranked ids; facets then filter. Neither needs to know about the other, so each is tested and changed on its own.
+
+**Facet semantics are uniform.** Within a facet values are OR-ed, across facets AND-ed. That is the only combination where ticking another box inside a facet can never shrink the result set.
+
+### Deliberate honesty constraints
+
+- A **broken** resource never renders a live link, and its dead URL appears in no `href` on the page. Broken records are also excluded from default results, but remain findable by filtering for them explicitly, because a maintainer needs to list them.
+- A resource with **no URL** renders no button at all — not a disabled one, and not a plausible-looking link.
+- Filtering by duration **excludes** resources with no recorded length. Including them would silently assert "this fits in 60 minutes" about something whose length nobody has established.
+- The empty state names **which filter to loosen**, computed by re-running the filter without each active facet — not a generic "no results".
+- The detail page's "why this ranks where it does" is rendered from **the same computation that produced the ordering**, so the explanation cannot drift from the ranking it explains.
+
+### Performance
+
+The search index is built at build time and shipped as its own lazily-imported chunk (~9 kB gzipped), fetched only when someone actually types a query. The library and detail routes are code-split too. A test asserts **p95 search latency under 50 ms at 1,000 records**.
 
 ## Design system and accessibility
 
@@ -183,8 +205,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 1 | GitHub Pages pipeline (deploy early to de-risk base paths) | ✅ Done |
 | 2 | Content schema, Zod validation, build pipeline | ✅ Done |
 | 3 | Design system, app shell, routing | ✅ Done |
-| 4 | Resource library — search, filter, sort, detail | Next |
-| 5 | Local user state — bookmarks, completion, profile | |
+| 4 | Resource library — search, filter, sort, detail | ✅ Done |
+| 5 | Local user state — bookmarks, completion, profile | Next |
 | 6 | Dashboard | |
 | 7 | Learning paths and progress | ← **MVP ends here** |
 | 8–13 | Datasets · papers · projects · glossary · link health · perf/SEO/a11y hardening | Post-MVP |

@@ -57,15 +57,21 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
   })
 
-  it('404s an unknown route, naming the path that was missed', () => {
+  it('renders the resource library at /library', async () => {
     renderAt('/library')
+    // Code-split, so the heading arrives after the Suspense fallback.
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/resource library/i)
+  })
+
+  it('404s an unknown route, naming the path that was missed', () => {
+    renderAt('/nowhere-at-all')
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
-    expect(screen.getByText('/library')).toBeVisible()
+    expect(screen.getByText('/nowhere-at-all')).toBeVisible()
   })
 
   it('does not expose routes for features that are not built yet', () => {
     // A stub page behind a working link is worse than an honest 404.
-    for (const path of ['/library', '/paths', '/progress', '/glossary', '/datasets']) {
+    for (const path of ['/paths', '/progress', '/glossary', '/datasets', '/projects']) {
       const { unmount } = renderAt(path)
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
       unmount()
@@ -74,13 +80,15 @@ describe('routing', () => {
 })
 
 describe('page structure', () => {
-  it.each(ALL_ROUTES)('has exactly one h1 at %s', (path) => {
+  it.each(ALL_ROUTES)('has exactly one h1 at %s', async (path) => {
     renderAt(path)
+    await screen.findByRole('heading', { level: 1 })
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
   })
 
-  it.each(ALL_ROUTES)('never skips a heading level at %s', (path) => {
+  it.each(ALL_ROUTES)('never skips a heading level at %s', async (path) => {
     const { container } = renderAt(path)
+    await screen.findByRole('heading', { level: 1 })
     const levels = [...container.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((h) =>
       Number(h.tagName[1]),
     )
@@ -131,7 +139,7 @@ describe('app shell', () => {
     renderAt('/')
     const footer = within(screen.getByRole('contentinfo'))
 
-    for (const label of [/^Learning paths$/, /^Resource library$/, /^Glossary$/]) {
+    for (const label of [/^Learning paths$/, /^Datasets$/, /^Glossary$/]) {
       expect(footer.queryByRole('link', { name: label })).not.toBeInTheDocument()
       expect(footer.getByText(label)).toBeVisible()
     }
@@ -217,11 +225,13 @@ describe('topic pages use real catalogue content', () => {
 describe('accessibility', () => {
   it.each(ALL_ROUTES)('has no blocking violations at %s', async (path) => {
     const { container } = renderAt(path)
+    await screen.findByRole('heading', { level: 1 })
     await expectNoA11yViolations(container)
   })
 
-  it.each(ALL_ROUTES)('reaches every interactive element by keyboard at %s', (path) => {
+  it.each(ALL_ROUTES)('reaches every interactive element by keyboard at %s', async (path) => {
     const { container } = renderAt(path)
+    await screen.findByRole('heading', { level: 1 })
 
     const focusable = container.querySelectorAll<HTMLElement>(
       'a[href], button, input, select, textarea, [tabindex]',

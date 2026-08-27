@@ -14,10 +14,12 @@ import { STATIC_ROUTES } from './routes-manifest.ts'
  * worst of both worlds, and invisible without this check.
  */
 describe('STATIC_ROUTES', () => {
-  it.each([...STATIC_ROUTES])('%s resolves to a real page, not the 404 view', (route) => {
+  // findBy, not getBy: some routes are code-split, so the first paint is the
+  // Suspense fallback rather than the page.
+  it.each([...STATIC_ROUTES])('%s resolves to a real page, not the 404 view', async (route) => {
     render(createElement(MemoryRouter, { initialEntries: [route] }, createElement(App)))
 
-    const heading = screen.getByRole('heading', { level: 1 })
+    const heading = await screen.findByRole('heading', { level: 1 })
     expect(heading).not.toHaveTextContent(/page not found/i)
   })
 

@@ -3,6 +3,10 @@ import { Link } from 'react-router'
 import { Callout } from '@/components/index.ts'
 import { contentManifest, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
+import { GOAL_LABELS } from '@/lib/storage/schema.ts'
+import { useUserStore } from '@/lib/storage/store.ts'
+
+const ONBOARDING_NOTICE = 'onboarding-prompt'
 
 /**
  * Interim home page.
@@ -23,13 +27,22 @@ export function Home() {
 
   const { counts, verification } = contentManifest
 
+  const profile = useUserStore((s) => s.profile)
+  const savedCount = useUserStore((s) => Object.keys(s.bookmarks).length)
+  const doneCount = useUserStore((s) => Object.keys(s.completions).length)
+  const dismissed = useUserStore((s) => s.dismissedNotices.includes(ONBOARDING_NOTICE))
+  const dismissNotice = useUserStore((s) => s.dismissNotice)
+
+  const hasProfile = profile.level !== null || profile.goal !== null
+  const hasActivity = savedCount > 0 || doneCount > 0
+
   const roadmap: Array<[string, string, boolean]> = [
     ['0', 'Toolchain', true],
     ['1', 'Deployment pipeline', true],
     ['2', 'Content pipeline', true],
     ['3', 'Design system and topic map', true],
-    ['4', 'Resource library with search and filters', false],
-    ['5', 'Bookmarks and progress', false],
+    ['4', 'Resource library with search and filters', true],
+    ['5', 'Bookmarks and progress', true],
     ['6', 'Dashboard', false],
     ['7', 'Learning paths', false],
   ]
@@ -60,6 +73,62 @@ export function Home() {
           </Link>
         </div>
       </section>
+
+      {!hasProfile && !dismissed ? (
+        <section
+          className="border-border bg-surface mt-10 max-w-[var(--measure)] rounded-lg border p-5"
+          aria-labelledby="get-started"
+        >
+          <h2 id="get-started" className="text-fg text-base font-semibold">
+            Tell the atlas where you are starting
+          </h2>
+          <p className="text-fg-muted mt-2 text-sm leading-relaxed">
+            Two optional questions. They tune what gets recommended and how resources are ordered.
+            Everything stays in this browser, and nothing on the site is locked behind them.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <Link
+              to="/onboarding"
+              className="bg-accent text-accent-fg hover:bg-accent-hover rounded px-4 py-2 text-sm font-medium transition-colors"
+            >
+              Set your starting point
+            </Link>
+            <button
+              type="button"
+              onClick={() => dismissNotice(ONBOARDING_NOTICE)}
+              className="text-fg-muted text-sm underline underline-offset-2"
+            >
+              Not now
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      {hasProfile || hasActivity ? (
+        <section className="mt-10 max-w-[var(--measure)]" aria-labelledby="your-state">
+          <h2 id="your-state" className="text-fg text-sm font-semibold">
+            Where you are
+          </h2>
+          <p className="text-fg-muted mt-2 text-sm leading-relaxed">
+            {profile.level ? (
+              <>
+                Level <span className="text-fg capitalize">{profile.level}</span>.{' '}
+              </>
+            ) : null}
+            {profile.goal ? (
+              <>
+                Goal <span className="text-fg">{GOAL_LABELS[profile.goal]}</span>.{' '}
+              </>
+            ) : null}
+            {/* Counts, never a completion percentage: the catalogue is curated
+                and incomplete, so a percentage would imply mastery. */}
+            {savedCount} saved, {doneCount} marked done.{' '}
+            <Link to="/progress" className="text-accent underline underline-offset-2">
+              See your progress
+            </Link>
+          </p>
+        </section>
+      ) : null}
 
       <section className="mt-12" aria-labelledby="catalogue">
         <h2 id="catalogue" className="text-fg text-sm font-semibold">
@@ -95,10 +164,10 @@ export function Home() {
           What works today
         </h2>
         <p className="text-fg-muted mt-2 text-sm leading-relaxed">
-          The topic map and the methodology page are real. Search, filtering, bookmarks, progress
-          tracking and learning paths are not built yet — there is no dashboard here because there
-          is nothing yet to report on, and showing empty progress widgets would be a lie about what
-          the site can do.
+          The library, topic map, bookmarks and progress tracking are real. Learning paths and the
+          full dashboard are not built yet — there is no dashboard here because there are no paths
+          yet to report progress against, and a progress bar with nothing behind it would be a lie
+          about what the site can do.
         </p>
 
         <ol className="mt-5 space-y-1.5">

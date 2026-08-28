@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 4.** The resource library — search, 11 filters, sorting and detail pages — is live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Bookmarks, progress tracking and learning paths do not exist yet. See the roadmap below.
+> **Status: Phase 5.** The library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Learning paths and the dashboard do not exist yet. See the roadmap below.
 
 ---
 
@@ -82,7 +82,7 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/library`, `/topics`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Known at build time (`/`, `/library`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
 | Dynamic (`/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
@@ -98,7 +98,7 @@ npm run build
 npm run preview:pages   # http://localhost:4180/AI-Atlas/
 ```
 
-Expected: `/`, `/topics` and `/about` return **200** (a bare directory URL 301s to its trailing-slash form first); `/topics/nlp` returns **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
+Expected: `/`, `/library`, `/topics`, `/progress`, `/onboarding` and `/about` return **200** (a bare directory URL 301s to its trailing-slash form first); `/topics/nlp` and `/library/:id` return **404** while serving the redirector that restores the URL. That 404 is correct — it is what makes deep links work on a host with no rewrite rules.
 
 ## Content
 
@@ -142,7 +142,35 @@ The library is the product's core surface. Three rules shape it:
 
 ### Performance
 
-The search index is built at build time and shipped as its own lazily-imported chunk (~9 kB gzipped), fetched only when someone actually types a query. The library and detail routes are code-split too. A test asserts **p95 search latency under 50 ms at 1,000 records**.
+The search index is built at build time and shipped as its own lazily-imported chunk (~9 kB gzipped), fetched only when someone actually types a query. The library, detail, progress and onboarding routes are code-split too. A test asserts **p95 search latency under 50 ms at 1,000 records**.
+
+**Known cost:** the entry chunk is ~125 kB gzipped, up from ~102 kB in Phase 4. Zod is now client-side, because validating persisted state on read is what makes the corruption handling correct — and `Home` reads the store, so it sits on the critical path. That is within the 180 kB budget, but it is a real cost for one feature. `zod/mini` (shipped in Zod 4) is the obvious lever if Phase 13 needs the headroom.
+
+## Your data
+
+There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
+
+### Reading it back safely
+
+Persisted data outlives the code that wrote it, is user-editable, and can be corrupted by anything sharing the origin. [`migrations.ts`](src/lib/storage/migrations.ts) therefore holds three absolute rules:
+
+1. **Never throw.** Broken data costs a user their progress; an exception costs them the whole site.
+2. **Never discard more than necessary.** If whole-object validation fails, each field is validated on its own — one corrupt bookmark must not cost you your completions.
+3. **Migrations are explicit and chained**, one version at a time.
+
+The version lives *inside* the payload, not in the key name. Encoding it in the key means a schema bump silently orphans everyone's progress unless someone remembers to read the old key too.
+
+Data from a **newer** version than the running build is left alone and defaults are used — two tabs on two versions must not let the older one write an older shape over newer data.
+
+### Storage that does not work
+
+Private windows and blocked-site-data settings don't return `null` — they **throw**, including on reads. Availability is detected by attempting a real write, every access is guarded, and when storage is unusable the app falls back to memory so the session still works. `/progress` and onboarding both say plainly that nothing is being saved.
+
+### Completion is never inferred
+
+It is set only by an explicit tick, never from opening a link, scrolling, or time on page. That is the rule the whole progress calculation rests on, so it is enforced at the single component that can set it.
+
+The weekly target counts only completed resources that have a **recorded** length, and says so — including how many completions it could not count.
 
 ## Design system and accessibility
 
@@ -206,8 +234,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 2 | Content schema, Zod validation, build pipeline | ✅ Done |
 | 3 | Design system, app shell, routing | ✅ Done |
 | 4 | Resource library — search, filter, sort, detail | ✅ Done |
-| 5 | Local user state — bookmarks, completion, profile | Next |
-| 6 | Dashboard | |
+| 5 | Local user state — bookmarks, completion, profile | ✅ Done |
+| 6 | Dashboard | Next |
 | 7 | Learning paths and progress | ← **MVP ends here** |
 | 8–13 | Datasets · papers · projects · glossary · link health · perf/SEO/a11y hardening | Post-MVP |
 

@@ -57,6 +57,18 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
   })
 
+  it('renders the progress page at /progress', async () => {
+    renderAt('/progress')
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/your progress/i)
+  })
+
+  it('renders onboarding at /onboarding', async () => {
+    renderAt('/onboarding')
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
+      /where are you starting/i,
+    )
+  })
+
   it('renders the resource library at /library', async () => {
     renderAt('/library')
     // Code-split, so the heading arrives after the Suspense fallback.
@@ -69,11 +81,13 @@ describe('routing', () => {
     expect(screen.getByText('/nowhere-at-all')).toBeVisible()
   })
 
-  it('does not expose routes for features that are not built yet', () => {
+  it('does not expose routes for features that are not built yet', async () => {
     // A stub page behind a working link is worse than an honest 404.
-    for (const path of ['/paths', '/progress', '/glossary', '/datasets', '/projects']) {
+    // findBy, not getBy: the route tree sits inside a Suspense boundary, so the
+    // first paint can be the fallback rather than the page.
+    for (const path of ['/paths', '/glossary', '/datasets', '/projects']) {
       const { unmount } = renderAt(path)
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
+      expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
       unmount()
     }
   })
@@ -139,7 +153,7 @@ describe('app shell', () => {
     renderAt('/')
     const footer = within(screen.getByRole('contentinfo'))
 
-    for (const label of [/^Learning paths$/, /^Datasets$/, /^Glossary$/]) {
+    for (const label of [/^Learning paths$/, /^Datasets$/, /^Glossary$/, /^Projects$/]) {
       expect(footer.queryByRole('link', { name: label })).not.toBeInTheDocument()
       expect(footer.getByText(label)).toBeVisible()
     }

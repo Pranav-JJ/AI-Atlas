@@ -33,6 +33,13 @@ export default tseslint.config(
       ],
 
       /*
+       * Filter and onboarding options wrap an input plus a two-line description
+       * in a <label>. That is implicitly associated and correctly named by its
+       * text content; the rule simply stops looking below its default depth.
+       */
+      'jsx-a11y/label-has-associated-control': ['error', { depth: 4 }],
+
+      /*
        * Security guardrails from the plan (§F). These are the two rules that stop
        * the two XSS/tabnabbing footguns this product is actually exposed to.
        */

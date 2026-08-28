@@ -7,6 +7,7 @@ import { FilterRail } from '@/features/library/FilterRail.tsx'
 import { SearchInput } from '@/features/library/SearchInput.tsx'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
 import { parseLibraryState, serializeLibraryState } from '@/lib/library/urlState.ts'
+import { useUserStore } from '@/lib/storage/store.ts'
 import { loadSearchIndex, applySearchOrder, runSearch } from '@/lib/search/runSearch.ts'
 import type { SearchIndex } from '@/lib/search/runSearch.ts'
 import {
@@ -53,6 +54,7 @@ export function Library() {
 
   const sort: SortOption = state.sort ?? defaultSortFor(criteria.query)
   const shown = state.shown ?? PAGE_SIZE
+  const learnerLevel = useUserStore((s) => s.profile.level)
 
   useDocumentMeta(
     'Resource library',
@@ -92,9 +94,9 @@ export function Library() {
     return sortResources(filterResources(searched, criteria), sort, {
       providersById,
       today: new Date().toISOString().slice(0, 10),
-      learnerLevel: null,
+      learnerLevel,
     })
-  }, [criteria, sort, index, needsIndex])
+  }, [criteria, sort, index, needsIndex, learnerLevel])
 
   const visible = results.slice(0, shown)
   const awaitingIndex = needsIndex && index === null

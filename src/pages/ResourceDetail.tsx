@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router'
 
 import {
@@ -6,6 +7,7 @@ import {
   Callout,
   Chip,
   ExternalLink,
+  ResourceActions,
   VerificationChip,
   VERIFICATION_PRESENTATION,
 } from '@/components/index.ts'
@@ -15,6 +17,7 @@ import { COST_LABELS, costTone, formatDuration, RESOURCE_TYPE_LABELS } from '@/l
 import type { AnyResource } from '@/lib/schema/index.ts'
 import { explainCuratedScore } from '@/lib/selectors/sortResources.ts'
 import { getTopic } from '@/lib/selectors/topics.ts'
+import { useUserStore } from '@/lib/storage/store.ts'
 
 import { NotFound } from './NotFound.tsx'
 
@@ -46,6 +49,14 @@ export function ResourceDetail() {
   const { resourceId } = useParams<{ resourceId: string }>()
   const [searchParams] = useSearchParams()
   const resource = resourceId ? byId.get(resourceId) : undefined
+  const recordView = useUserStore((s) => s.recordView)
+  const learnerLevel = useUserStore((s) => s.profile.level)
+
+  // Recents are "where was I", so only a real resource counts. Recording an
+  // unknown id would fill the list with entries that render as missing.
+  useEffect(() => {
+    if (resource) recordView(resource.id)
+  }, [resource, recordView])
 
   useDocumentMeta(resource ? resource.title : 'Resource not found', resource?.description)
 
@@ -62,7 +73,8 @@ export function ResourceDetail() {
   const scoreReasons = explainCuratedScore(resource, {
     providersById,
     today: new Date().toISOString().slice(0, 10),
-    learnerLevel: null,
+    // Now that a profile can exist, level matching becomes a real scoring term.
+    learnerLevel,
   })
   const totalScore = scoreReasons.reduce((sum, r) => sum + r.points, 0)
 
@@ -89,6 +101,9 @@ export function ResourceDetail() {
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="accent">{RESOURCE_TYPE_LABELS[resource.resource_type]}</Badge>
             <VerificationChip status={resource.status} lastVerifiedAt={resource.last_verified_at} />
+            <div className="ml-auto">
+              <ResourceActions resourceId={resource.id} variant="full" title={resource.title} />
+            </div>
           </div>
 
           <h1 className="text-fg mt-3 text-3xl font-semibold tracking-tight">{resource.title}</h1>

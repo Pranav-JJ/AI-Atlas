@@ -15,11 +15,12 @@ const PRIMARY_NAV = [
   { to: '/', label: 'Home', end: true },
   { to: '/library', label: 'Library', end: false },
   { to: '/topics', label: 'Topics', end: false },
+  { to: '/progress', label: 'Progress', end: false },
   { to: '/about', label: 'Methodology', end: false },
 ] as const
 
 /** Sections that exist as plans rather than pages, listed honestly in the footer. */
-const PLANNED = ['Learning paths', 'Datasets', 'Projects', 'Glossary', 'Progress tracking'] as const
+const PLANNED = ['Learning paths', 'Datasets', 'Projects', 'Glossary'] as const
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return [

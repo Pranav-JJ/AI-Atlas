@@ -20,6 +20,10 @@ const Library = lazy(() => import('./pages/Library.tsx').then((m) => ({ default:
 const ResourceDetail = lazy(() =>
   import('./pages/ResourceDetail.tsx').then((m) => ({ default: m.ResourceDetail })),
 )
+const Progress = lazy(() => import('./pages/Progress.tsx').then((m) => ({ default: m.Progress })))
+const Onboarding = lazy(() =>
+  import('./pages/Onboarding.tsx').then((m) => ({ default: m.Onboarding })),
+)
 
 function RouteFallback() {
   return (
@@ -39,7 +43,7 @@ function RouteFallback() {
  * working link is worse than an honest 404, because it costs the user a click
  * to discover the same thing.
  *
- * Bookmarks, progress and learning paths arrive in Phases 5 to 7.
+ * Learning paths arrive in Phase 7.
  */
 export function App() {
   const { pathname } = useLocation()
@@ -54,6 +58,8 @@ export function App() {
             <Route path="/" element={<Home />} />
             <Route path="/library" element={<Library />} />
             <Route path="/library/:resourceId" element={<ResourceDetail />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/progress" element={<Progress />} />
             <Route path="/topics" element={<Topics />} />
             <Route path="/topics/:topicId" element={<TopicDetail />} />
             <Route path="/about" element={<About />} />

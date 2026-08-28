@@ -4,6 +4,7 @@ import { COST_LABELS, costTone, formatDuration, RESOURCE_TYPE_LABELS } from '@/l
 import type { AnyResource, Provider } from '@/lib/schema/index.ts'
 
 import { Badge } from './Badge.tsx'
+import { ResourceActions } from './ResourceActions.tsx'
 import { VerificationChip } from './VerificationChip.tsx'
 
 interface ResourceCardProps {
@@ -51,6 +52,10 @@ export function ResourceCard({ resource, provider, backTo }: ResourceCardProps) 
         <Badge>{resource.difficulty}</Badge>
         <Badge tone={costTone(resource.cost_type)}>{COST_LABELS[resource.cost_type]}</Badge>
         {duration ? <span className="text-fg-subtle text-xs">{duration}</span> : null}
+
+        <div className="ml-auto">
+          <ResourceActions resourceId={resource.id} title={resource.title} />
+        </div>
       </div>
     </article>
   )

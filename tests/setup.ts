@@ -4,12 +4,16 @@ import { afterEach } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 
 /*
- * Testing Library's 1s default for findBy* is too tight for this app: routes
- * are code-split, so a page render resolves a dynamic import first, and that is
- * measurably slower when the whole suite runs in parallel. Raising it once here
- * beats scattering per-assertion timeouts, which hide the reason.
+ * Testing Library's 1s default for findBy* is far too tight for this app: routes
+ * are code-split, so rendering a page resolves a dynamic import first.
+ *
+ * 5s was still not enough. On a saturated machine the same suite ran in 57s once
+ * and 112s the next time, and a lazily-imported route intermittently exceeded
+ * five seconds — a flaky failure that says nothing about the product. 15s sits
+ * well under the 30s testTimeout, so a genuine hang still fails rather than
+ * hanging the run.
  */
-configure({ asyncUtilTimeout: 5000 })
+configure({ asyncUtilTimeout: 15_000 })
 
 afterEach(() => {
   cleanup()

@@ -4,7 +4,7 @@ import { Route, Routes, useLocation } from 'react-router'
 import { AppShell } from './app/AppShell.tsx'
 import { ErrorBoundary, Skeleton } from './components/index.ts'
 import { About } from './pages/About.tsx'
-import { Home } from './pages/Home.tsx'
+import { Dashboard } from './pages/Dashboard.tsx'
 import { NotFound } from './pages/NotFound.tsx'
 import { TopicDetail } from './pages/TopicDetail.tsx'
 import { Topics } from './pages/Topics.tsx'
@@ -55,7 +55,7 @@ export function App() {
       <ErrorBoundary resetKey={pathname}>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/library" element={<Library />} />
             <Route path="/library/:resourceId" element={<ResourceDetail />} />
             <Route path="/onboarding" element={<Onboarding />} />

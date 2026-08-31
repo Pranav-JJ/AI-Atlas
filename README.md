@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 5.** The library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Learning paths and the dashboard do not exist yet. See the roadmap below.
+> **Status: Phase 6.** The dashboard, library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Learning paths are the last MVP phase. See the roadmap below.
 
 ---
 
@@ -146,6 +146,20 @@ The search index is built at build time and shipped as its own lazily-imported c
 
 **Known cost:** the entry chunk is ~125 kB gzipped, up from ~102 kB in Phase 4. Zod is now client-side, because validating persisted state on read is what makes the corruption handling correct — and `Home` reads the store, so it sits on the critical path. That is within the 180 kB budget, but it is a real cost for one feature. `zod/mini` (shipped in Zod 4) is the obvious lever if Phase 13 needs the headroom.
 
+## The dashboard
+
+The home page resumes work rather than marketing the product. What it will not do matters as much as what it does:
+
+- **A first visit sees no zeroed counters and no empty progress widgets.** "0 saved, 0 done, 0%" tells a new arrival nothing and reads as broken. A first visit is the absence of *any* signal — profile, bookmarks, completions, history — not merely a missing profile, so someone who saved things but skipped onboarding is not treated as a new arrival.
+- **Sections that would be empty are not rendered at all.**
+- **Every recommendation shows its own reason**, verbatim, including "this is not personalised — tell us your level". The basis is always visible rather than implied.
+- **Topic coverage is a count**, with the catalogue size as context and an explicit statement that it is not a measure of how much of a subject you know.
+- **There is no path progress bar**, because there are no paths yet. The dashboard says so instead of rendering a bar with nothing behind it.
+
+`recommendNext` prefers, in order: the next incomplete *required* item of a path already started → the path a finished path points at → the highest-scoring uncompleted resource matching the profile → nothing, stated plainly. It never suggests a resource with no link, or one that is broken or deprecated, and it ranks using **the same curated score the library sorts by** — a recommendation that disagreed with the library's own ordering would confuse anyone who went looking themselves.
+
+Goal-to-topic mappings are checked against the real taxonomy by a test. A typo there would silently make a goal recommend nothing in particular, which is invisible because the fallback still returns a plausible resource.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -235,8 +249,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 3 | Design system, app shell, routing | ✅ Done |
 | 4 | Resource library — search, filter, sort, detail | ✅ Done |
 | 5 | Local user state — bookmarks, completion, profile | ✅ Done |
-| 6 | Dashboard | Next |
-| 7 | Learning paths and progress | ← **MVP ends here** |
+| 6 | Dashboard | ✅ Done |
+| 7 | Learning paths and progress | Next — **MVP ends here** |
 | 8–13 | Datasets · papers · projects · glossary · link health · perf/SEO/a11y hardening | Post-MVP |
 
 ## Two rules this product will not bend on

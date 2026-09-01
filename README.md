@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 6.** The dashboard, library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 124 records. Learning paths are the last MVP phase. See the roadmap below.
+> **Status: MVP complete (Phase 7).** Dashboard, learning paths, resource library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 125 records. Post-MVP phases (datasets, papers, projects, glossary, link health, perf/SEO hardening) are listed in the roadmap.
 
 ---
 
@@ -82,8 +82,8 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/library`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
-| Dynamic (`/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
+| Known at build time (`/`, `/paths`, `/library`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
 
@@ -159,6 +159,26 @@ The home page resumes work rather than marketing the product. What it will not d
 `recommendNext` prefers, in order: the next incomplete *required* item of a path already started → the path a finished path points at → the highest-scoring uncompleted resource matching the profile → nothing, stated plainly. It never suggests a resource with no link, or one that is broken or deprecated, and it ranks using **the same curated score the library sorts by** — a recommendation that disagreed with the library's own ordering would confuse anyone who went looking themselves.
 
 Goal-to-topic mappings are checked against the real taxonomy by a test. A typo there would silently make a goal recommend nothing in particular, which is invisible because the fallback still returns a plausible resource.
+
+## Learning paths and the progress rule
+
+A path is an ordered route through part of the catalogue with the reasoning for each step written down — a suggestion, not a syllabus. Every path states what it assumes, so you can start in the middle.
+
+**Progress has exactly one calculation**, and it lives in [`computePathProgress.ts`](src/lib/selectors/computePathProgress.ts):
+
+```
+progress = floor(completedRequired / totalRequired × 100)
+```
+
+- **Only required items count.** Optional items are tracked and shown separately; completing one never moves the bar.
+- **Checkpoints count as required items** — you self-assess and tick them.
+- **A path with no required items shows "Not started"**, never 0% or 100%, and renders no bar at all. An empty bar reads as "0% done", which is a different and unsupported claim.
+- **Rounding is floor.** 2 of 3 is 66%, never 67% — rounding up would let a path read 100% before it was finished.
+- **Progress is never inferred** from opening a link, scrolling, or time on page.
+
+This rule is written in three places — the code, `EDITORIAL_POLICY.md`, and the path page itself — so a test asserts the policy document still matches the implementation. The rule is also rendered on the path page under "How this is calculated", from the same exported constants the code uses.
+
+Time estimates are **ranges with their assumptions shown next to them**, never a single number. A number without its assumptions is a schedule, and this is not one.
 
 ## Your data
 
@@ -250,7 +270,7 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 4 | Resource library — search, filter, sort, detail | ✅ Done |
 | 5 | Local user state — bookmarks, completion, profile | ✅ Done |
 | 6 | Dashboard | ✅ Done |
-| 7 | Learning paths and progress | Next — **MVP ends here** |
+| 7 | Learning paths and progress | ✅ Done — **MVP complete** |
 | 8–13 | Datasets · papers · projects · glossary · link health · perf/SEO/a11y hardening | Post-MVP |
 
 ## Two rules this product will not bend on

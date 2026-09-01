@@ -18,6 +18,7 @@
  */
 export const STATIC_ROUTES = [
   '/',
+  '/paths',
   '/library',
   '/topics',
   '/progress',
@@ -26,7 +27,8 @@ export const STATIC_ROUTES = [
 ] as const
 
 /**
- * Dynamic routes such as /topics/:topicId and /library/:resourceId are NOT pre-rendered. They are served
+ * Dynamic routes such as /topics/:topicId, /library/:resourceId and /paths/:pathId are NOT
+ * pre-rendered. They are served
  * by the 404.html fallback, which costs one redirect but keeps the build free of
  * a dependency on generated content. Pre-rendering every topic page is a Phase 13
  * (SEO and performance) decision, to be made against measurement rather than

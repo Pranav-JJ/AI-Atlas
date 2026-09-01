@@ -13,6 +13,7 @@ import { ThemeToggle } from '@/components/index.ts'
  */
 const PRIMARY_NAV = [
   { to: '/', label: 'Home', end: true },
+  { to: '/paths', label: 'Paths', end: false },
   { to: '/library', label: 'Library', end: false },
   { to: '/topics', label: 'Topics', end: false },
   { to: '/progress', label: 'Progress', end: false },
@@ -20,7 +21,7 @@ const PRIMARY_NAV = [
 ] as const
 
 /** Sections that exist as plans rather than pages, listed honestly in the footer. */
-const PLANNED = ['Learning paths', 'Datasets', 'Projects', 'Glossary'] as const
+const PLANNED = ['Datasets', 'Projects', 'Glossary'] as const
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return [

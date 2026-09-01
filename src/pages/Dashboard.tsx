@@ -1,7 +1,13 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 
-import { Badge, Callout, ResourceCardItem, VerificationChip } from '@/components/index.ts'
+import {
+  Badge,
+  Callout,
+  ProgressBar,
+  ResourceCardItem,
+  VerificationChip,
+} from '@/components/index.ts'
 import {
   contentManifest,
   learningPaths,
@@ -17,6 +23,7 @@ import {
   suggestMore,
   type RecommendationContext,
 } from '@/lib/selectors/recommendNext.ts'
+import { computePathProgress } from '@/lib/selectors/computePathProgress.ts'
 import { DOMAIN_LABELS, DOMAIN_ORDER } from '@/lib/selectors/topics.ts'
 import { GOAL_LABELS } from '@/lib/storage/schema.ts'
 import { useUserStore } from '@/lib/storage/store.ts'
@@ -124,6 +131,18 @@ export function Dashboard() {
   )
 
   const recommendation = useMemo(() => recommendNext(context), [context])
+
+  /**
+   * Paths the learner has actually begun. An untouched path is not "in
+   * progress", and showing a 0% bar for something never opened would be the
+   * same misleading zero this dashboard avoids everywhere else.
+   */
+  const activePaths = learningPaths
+    .map((path) => ({
+      path,
+      progress: computePathProgress(path, { completions, checkpointCompletions }),
+    }))
+    .filter(({ progress }) => !progress.isUntouched)
 
   const recommendedId =
     recommendation.kind === 'path-item' || recommendation.kind === 'resource'
@@ -291,6 +310,32 @@ export function Dashboard() {
         )}
       </Section>
 
+      {activePaths.length > 0 ? (
+        <Section
+          title="Your paths"
+          action={
+            <Link to="/paths" className="text-accent text-sm underline underline-offset-2">
+              All paths
+            </Link>
+          }
+        >
+          <ul className="mt-3 space-y-3">
+            {activePaths.map(({ path, progress }) => (
+              <li key={path.id} className="border-border bg-surface rounded-lg border p-4">
+                <h3 className="text-fg text-sm font-medium">
+                  <Link to={`/paths/${path.id}`} className="underline-offset-2 hover:underline">
+                    {path.title}
+                  </Link>
+                </h3>
+                <div className="mt-3">
+                  <ProgressBar progress={progress} label={path.title} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
+
       {continueWith ? (
         <Section title="Pick up where you left off">
           <ul className="mt-3 space-y-2">
@@ -401,10 +446,10 @@ export function Dashboard() {
 
       {/* There is no path progress here because there are no paths yet. Saying
           so beats a progress bar with nothing behind it. */}
-      <Callout className="mt-10 max-w-[var(--measure)]" title="Not built yet">
-        Learning paths are not in the catalogue yet, so this dashboard cannot show a path or a
-        progress bar. Datasets, projects and the glossary are also still to come. Until then,
-        recommendations come from a single resource ranking rather than an ordered curriculum.
+      <Callout className="mt-10 max-w-[var(--measure)]" title="Still to come">
+        One learning path is written so far, so most recommendations still come from the resource
+        ranking rather than an ordered curriculum. Datasets, projects and the glossary are not in
+        the catalogue yet.
       </Callout>
     </>
   )

@@ -89,10 +89,19 @@ describe('a brand-new visitor', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('says plainly that learning paths are not built yet', () => {
-    // Rather than rendering a progress bar with nothing behind it.
+  it('is honest about how thin the path coverage still is', () => {
+    // One path exists now, so the claim is "mostly resource ranking", not
+    // "no paths at all". The wording tracks reality rather than the phase plan.
     renderDashboard()
-    expect(screen.getByText(/learning paths are not in the catalogue yet/i)).toBeVisible()
+    expect(screen.getByText(/one learning path is written so far/i)).toBeVisible()
+  })
+
+  it('shows no path progress bar for someone who has started nothing', () => {
+    // A 0% bar for a path never opened is the same misleading zero this
+    // dashboard avoids everywhere else.
+    renderDashboard()
+    expect(screen.queryByRole('heading', { name: /your paths/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
   })
 })
 

@@ -1,0 +1,166 @@
+{
+  "id": "path-nlp-foundations",
+  "title": "NLP Foundations",
+  "audience": "Someone comfortable writing Python who wants to understand modern NLP from tokens upwards, rather than by calling an API and hoping.",
+  "outcome_statement": "You can explain how text becomes tokens, becomes vectors, becomes predictions — and you can read a transformer paper without it being a wall of notation.",
+  "prerequisites": {
+    "topics": ["python-for-ai"],
+    "description": "Basic Python. No linear algebra needed to start, though module three is easier if you have met vectors and matrices before."
+  },
+  "estimated_hours": { "min": 25, "max": 45 },
+  "estimate_assumptions": "Assumes prior Python, around five focused hours a week, and that you actually do the checkpoints. Individual pace varies enormously — treat this as a range, not a schedule.",
+  "modules": [
+    {
+      "id": "mod-text-to-tokens",
+      "title": "From text to tokens",
+      "summary": "How raw text becomes the discrete units a model consumes, and why that choice shapes everything downstream.",
+      "items": [
+        {
+          "kind": "resource",
+          "resource_id": "res-hf-tokenizer-summary",
+          "checkpoint": null,
+          "required": true,
+          "order": 1,
+          "note": "Start here rather than with embeddings. The vocabulary story explains a great deal of later model behaviour that otherwise looks arbitrary."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-spacy-101",
+          "checkpoint": null,
+          "required": true,
+          "order": 2,
+          "note": "A working pipeline you can run today, and a reminder that plenty of production NLP never touches a transformer."
+        },
+        {
+          "kind": "checkpoint",
+          "resource_id": null,
+          "checkpoint": {
+            "title": "Tokenise the same paragraph three ways",
+            "prompt": "Take one paragraph of your own text. Tokenise it with simple whitespace splitting, with a subword tokenizer, and with spaCy. Compare the token counts, and see what each does with a made-up word like “flurbulent”.",
+            "how_to_self_assess": "You can say in one sentence each why the counts differ, and which approach handles an unseen word best and why."
+          },
+          "required": true,
+          "order": 3,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "mod-representations",
+      "title": "Representations and embeddings",
+      "summary": "Turning tokens into vectors where geometric closeness means something, which is the substrate under search, clustering and retrieval.",
+      "items": [
+        {
+          "kind": "resource",
+          "resource_id": "res-illustrated-word2vec",
+          "checkpoint": null,
+          "required": true,
+          "order": 1,
+          "note": "Community-created, and the clearest available intuition for why vector similarity corresponds to meaning."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-sentence-transformers",
+          "checkpoint": null,
+          "required": true,
+          "order": 2,
+          "note": "The practical toolkit. Read enough to build a small semantic search over your own documents."
+        },
+        {
+          "kind": "checkpoint",
+          "resource_id": null,
+          "checkpoint": {
+            "title": "Build a tiny semantic search",
+            "prompt": "Embed twenty short documents of your own choosing, then retrieve the nearest three for a handful of queries. Include at least one query whose best answer shares no words with the document.",
+            "how_to_self_assess": "The no-shared-words query returns something sensible, and you can explain why keyword search would have failed it."
+          },
+          "required": true,
+          "order": 3,
+          "note": null
+        }
+      ]
+    },
+    {
+      "id": "mod-transformers",
+      "title": "Attention and transformers",
+      "summary": "The architecture underneath nearly everything current, approached through intuition first and the original paper second.",
+      "items": [
+        {
+          "kind": "resource",
+          "resource_id": "res-illustrated-transformer",
+          "checkpoint": null,
+          "required": true,
+          "order": 1,
+          "note": "Read this before the paper. Going the other way round is possible but considerably more painful."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-paper-attention-is-all-you-need",
+          "checkpoint": null,
+          "required": true,
+          "order": 2,
+          "note": "The primary source. Short, and far more readable once the illustrated version has given you the shapes."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-paper-bert",
+          "checkpoint": null,
+          "required": false,
+          "order": 3,
+          "note": "Optional. Worth it if you want to understand where the pretrain-then-fine-tune pattern came from."
+        }
+      ]
+    },
+    {
+      "id": "mod-build-and-evaluate",
+      "title": "Building and evaluating something",
+      "summary": "Putting it together on a real task, and being honest about whether it worked.",
+      "items": [
+        {
+          "kind": "resource",
+          "resource_id": "res-hf-nlp-course",
+          "checkpoint": null,
+          "required": true,
+          "order": 1,
+          "note": "Work through to fine-tuning. Written by the library's maintainers, so it reflects that ecosystem's conventions rather than a neutral survey."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-hf-transformers-docs",
+          "checkpoint": null,
+          "required": true,
+          "order": 2,
+          "note": "Reference rather than reading. The generation parameters in particular explain a lot of otherwise baffling output."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-spacy-advanced-course",
+          "checkpoint": null,
+          "required": false,
+          "order": 3,
+          "note": "Optional. Take this if you would rather build pipelines than fine-tune models."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-slp3",
+          "checkpoint": null,
+          "required": false,
+          "order": 4,
+          "note": "Optional and substantial. The standard reference to keep beside you rather than to read through."
+        },
+        {
+          "kind": "resource",
+          "resource_id": "res-cs224n",
+          "checkpoint": null,
+          "required": false,
+          "order": 5,
+          "note": "Optional. The depth option, with assignments that make you implement the ideas rather than call them."
+        }
+      ]
+    }
+  ],
+  "suggested_project_ids": [],
+  "completion_criteria": "Every required item in all four modules marked complete, including both checkpoints.",
+  "next_path_ids": [],
+  "status": "unverified"
+}

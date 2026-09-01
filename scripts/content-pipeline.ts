@@ -178,8 +178,18 @@ export async function loadContentSet(options: LoadOptions = {}): Promise<LoadRes
     zProvider,
     set.providers,
   )
+  /*
+   * Datasets live in their own directory but load into the SAME collection as
+   * everything else. They are specialisations of the resource base, so this is
+   * what makes them appear in the unified library and all of its filters
+   * without a second code path — and what stops a dataset drifting into a
+   * differently-shaped record over time.
+   */
   await ingest(
-    await listJsonFiles(join(root, 'resources')),
+    [
+      ...(await listJsonFiles(join(root, 'resources'))),
+      ...(await listJsonFiles(join(root, 'datasets'))),
+    ],
     zResourceBase,
     set.resources,
     schemaForResource,

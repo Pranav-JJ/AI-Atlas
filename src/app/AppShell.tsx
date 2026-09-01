@@ -21,7 +21,7 @@ const PRIMARY_NAV = [
 ] as const
 
 /** Sections that exist as plans rather than pages, listed honestly in the footer. */
-const PLANNED = ['Datasets', 'Projects', 'Glossary'] as const
+const PLANNED = ['Projects', 'Glossary'] as const
 
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return [
@@ -106,7 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <nav aria-label="Footer">
                 <h2 className="text-fg text-sm font-semibold">Available now</h2>
                 <ul className="mt-3 space-y-2">
-                  {PRIMARY_NAV.map((item) => (
+                  {[...PRIMARY_NAV, { to: '/datasets', label: 'Datasets' }].map((item) => (
                     <li key={item.to}>
                       <Link
                         to={item.to}

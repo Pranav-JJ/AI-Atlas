@@ -6,6 +6,7 @@ import {
   Breadcrumbs,
   Callout,
   Chip,
+  DatasetDetails,
   ExternalLink,
   ResourceActions,
   VerificationChip,
@@ -13,6 +14,7 @@ import {
 } from '@/components/index.ts'
 import { providers, resources, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
+import { isDataset } from '@/lib/datasets.ts'
 import { COST_LABELS, costTone, formatDuration, RESOURCE_TYPE_LABELS } from '@/lib/format.ts'
 import type { AnyResource } from '@/lib/schema/index.ts'
 import { explainCuratedScore } from '@/lib/selectors/sortResources.ts'
@@ -187,6 +189,10 @@ export function ResourceDetail() {
               <p className="text-fg-muted mt-2 text-sm leading-relaxed">{resource.quality_notes}</p>
             </section>
           ) : null}
+
+          {/* Datasets carry their licence and the standing warning as one
+              component, so a dataset can never be shown without both. */}
+          {isDataset(resource) ? <DatasetDetails dataset={resource} /> : null}
 
           {isPaper(resource) ? (
             <section className="mt-8" aria-labelledby="paper">

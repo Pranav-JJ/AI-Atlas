@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: MVP complete (Phase 7).** Dashboard, learning paths, resource library, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 125 records. Post-MVP phases (datasets, papers, projects, glossary, link health, perf/SEO hardening) are listed in the roadmap.
+> **Status: Phase 8.** Dashboard, learning paths, resource library, dataset explorer, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 132 records. Papers, projects, glossary, link health and perf/SEO hardening remain.
 
 ---
 
@@ -82,7 +82,7 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/paths`, `/library`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
 | Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
@@ -180,6 +180,23 @@ This rule is written in three places — the code, `EDITORIAL_POLICY.md`, and th
 
 Time estimates are **ranges with their assumptions shown next to them**, never a single number. A number without its assumptions is a schedule, and this is not one.
 
+## Datasets and benchmarks
+
+Datasets are **specialisations of the resource record**, not a separate kind of thing. They live in `content/datasets/` but load into the same collection, so they appear in the library and all of its filters with no second code path — and cannot drift into a differently-shaped record over time.
+
+Each has **one canonical URL** at `/library/:id`. `/datasets` is a specialised explorer over them (modality, task, access, licence) that links there. A separate `/datasets/:id` would mean two URLs for one record and two places for the warning to be forgotten.
+
+### The licence warning is structurally unavoidable
+
+The requirement was that no dataset can be shown without its licence field *and* a standing warning. Rather than remembering to add the warning on each new surface, the licence, the access terms and the warning are **one inseparable component** ([`DatasetDetails.tsx`](src/components/DatasetDetails.tsx)) — you cannot render one without the others. A parameterised test asserts this for **every** dataset in the catalogue, and another asserts the warning has no dismiss control.
+
+### What is and is not recorded
+
+- **Licences are read off the source, never recalled.** Where a source states a named licence it is recorded with a link to where it was read. Where it says "other", that is recorded as "other" — not upgraded to a guess. Where nothing is stated, `unknown`.
+- Datasets whose licence is `unknown` or `other` are flagged as **"licence not settled"** on the card and in the warning, and are filterable as a group — the practical question is whether you still have work to do before using the data.
+- **Benchmark metrics are recorded; benchmark scores are not.** A number without its exact evaluation setup is not comparable to anything. A test asserts no score field ever creeps in.
+- Every dataset records **known limitations**. A dataset entry with no caveats is almost always an incomplete entry, so a test requires at least one.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -271,7 +288,12 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 5 | Local user state — bookmarks, completion, profile | ✅ Done |
 | 6 | Dashboard | ✅ Done |
 | 7 | Learning paths and progress | ✅ Done — **MVP complete** |
-| 8–13 | Datasets · papers · projects · glossary · link health · perf/SEO/a11y hardening | Post-MVP |
+| 8 | Datasets and benchmarks explorer | ✅ Done |
+| 9 | Papers and research | Next |
+| 10 | Project explorer | |
+| 11 | Glossary and concept pages | |
+| 12 | Link health and editorial operations | |
+| 13 | SEO, performance and accessibility hardening | |
 
 ## Two rules this product will not bend on
 

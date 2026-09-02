@@ -8,7 +8,7 @@ import {
   ProgressBar,
   VerificationChip,
 } from '@/components/index.ts'
-import { learningPaths, resources, topics } from '@/content/generated/index.ts'
+import { learningPaths, projects, resources, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
 import { formatDuration, RESOURCE_TYPE_LABELS } from '@/lib/format.ts'
 import type { Module, PathItem } from '@/lib/schema/index.ts'
@@ -25,6 +25,7 @@ import { NotFound } from './NotFound.tsx'
 
 const resourcesById = new Map(resources.map((r) => [r.id, r]))
 const pathsById = new Map(learningPaths.map((p) => [p.id, p]))
+const projectsById = new Map(projects.map((p) => [p.id, p]))
 
 function ItemRow({
   pathId,
@@ -149,6 +150,10 @@ export function PathDetail() {
     .map((id) => getTopic(topics, id))
     .filter((t): t is NonNullable<typeof t> => t !== null)
 
+  const suggestedProjects = path.suggested_project_ids
+    .map((id) => projectsById.get(id))
+    .filter((p): p is NonNullable<typeof p> => p !== undefined)
+
   const nextPaths = path.next_path_ids
     .map((id) => pathsById.get(id))
     .filter((p): p is NonNullable<typeof p> => p !== undefined)
@@ -215,6 +220,35 @@ export function PathDetail() {
               </section>
             )
           })}
+
+          {suggestedProjects.length > 0 ? (
+            <section className="mt-10" aria-labelledby="projects">
+              <h2 id="projects" className="text-fg text-sm font-semibold">
+                Projects to try alongside this
+              </h2>
+              <p className="text-fg-muted mt-2 text-sm leading-relaxed">
+                Reading and watching only gets you so far. These are sized for one person and a
+                laptop.
+              </p>
+              <ul className="mt-3 space-y-2">
+                {suggestedProjects.map((project) => (
+                  <li key={project.id} className="text-sm">
+                    <Link
+                      to={`/projects/${project.id}`}
+                      className="text-accent underline underline-offset-2"
+                    >
+                      {project.title}
+                    </Link>
+                    <span className="text-fg-subtle">
+                      {' '}
+                      · {project.estimated_effort_hours.min}–{project.estimated_effort_hours.max}{' '}
+                      hours
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <section className="mt-10" aria-labelledby="completion">
             <h2 id="completion" className="text-fg text-sm font-semibold">

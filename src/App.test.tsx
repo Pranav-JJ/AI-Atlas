@@ -57,6 +57,11 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
   })
 
+  it('renders the project explorer at /projects', async () => {
+    renderAt('/projects')
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/project ideas/i)
+  })
+
   it('renders the papers index at /papers', async () => {
     renderAt('/papers')
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
@@ -109,7 +114,7 @@ describe('routing', () => {
     // A stub page behind a working link is worse than an honest 404.
     // findBy, not getBy: the route tree sits inside a Suspense boundary, so the
     // first paint can be the fallback rather than the page.
-    for (const path of ['/glossary', '/projects', '/nothing-here']) {
+    for (const path of ['/glossary', '/nothing-here']) {
       const { unmount } = renderAt(path)
       expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
       unmount()
@@ -177,7 +182,7 @@ describe('app shell', () => {
     renderAt('/')
     const footer = within(screen.getByRole('contentinfo'))
 
-    for (const label of [/^Glossary$/, /^Projects$/]) {
+    for (const label of [/^Glossary$/]) {
       expect(footer.queryByRole('link', { name: label })).not.toBeInTheDocument()
       expect(footer.getByText(label)).toBeVisible()
     }

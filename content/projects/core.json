@@ -1,0 +1,226 @@
+[
+  {
+    "id": "proj-text-classification-baseline",
+    "title": "Build a text classifier, then try to beat it",
+    "problem_statement": "Train the simplest sensible sentiment classifier you can on a public review dataset, measure it honestly, and only then try something more sophisticated. The point is not the final score — it is discovering how strong a plain baseline is, and how easy it is to fool yourself into thinking you have improved on it.",
+    "learning_objectives": [
+      "Split data so that your score means something",
+      "Fit preprocessing inside a pipeline to avoid leakage",
+      "Compare two models on the same held-out data",
+      "Explain why accuracy is a fair metric here and often is not"
+    ],
+    "topics": ["text-classification", "supervised-learning", "model-selection-validation"],
+    "difficulty": "beginner",
+    "recommended_dataset_ids": ["ds-imdb-reviews"],
+    "suggested_tools": ["Python", "scikit-learn", "pandas"],
+    "expected_output": "A notebook or small repository containing a baseline model, one alternative, and a short written comparison of the two on the same held-out split.",
+    "milestones": [
+      "Load the data and confirm the class balance yourself rather than assuming it",
+      "Build a TF-IDF and linear model baseline inside a single pipeline",
+      "Evaluate on a held-out split you never touched while developing",
+      "Try one more capable model and compare it against the baseline honestly",
+      "Write down what changed, what did not, and why you think so"
+    ],
+    "evaluation_approach": "Compare against a trivial baseline that always predicts the majority class, and against your own linear baseline. Report accuracy plus a confusion matrix. If your improvement is smaller than the variation you see across different random splits, treat it as no improvement.",
+    "stretch_goals": [
+      "Add cross-validation and report the spread, not just the mean",
+      "Inspect the most heavily weighted features and see whether they make sense",
+      "Test on reviews you write yourself and see where it breaks"
+    ],
+    "common_failure_modes": [
+      "Fitting the vectoriser on all the data before splitting, which leaks the test set",
+      "Reporting the best score seen across many attempts rather than one honest held-out result",
+      "Concluding a model is better from a difference well inside the noise",
+      "Assuming accuracy on a balanced polarised dataset predicts real-world performance"
+    ],
+    "estimated_effort_hours": { "min": 4, "max": 10 },
+    "responsible_use_notes": "The dataset is public user-generated text and may contain offensive language. A sentiment model trained on polarised movie reviews should not be repurposed to judge people's writing, moderate content, or make decisions about anyone.",
+    "requires_gpu": false
+  },
+  {
+    "id": "proj-semantic-search",
+    "title": "Semantic search over your own documents",
+    "problem_statement": "Build a search tool over a corpus you actually care about — your notes, a set of papers, or a project's documentation — that finds relevant passages even when they share no words with the query. Then work out where it is worse than plain keyword search, because it will be.",
+    "learning_objectives": [
+      "Turn documents into embeddings and retrieve by similarity",
+      "Chunk documents deliberately rather than arbitrarily",
+      "Compare semantic retrieval against a keyword baseline",
+      "Explain when vector search helps and when it hurts"
+    ],
+    "topics": ["semantic-search", "representations-embeddings", "information-retrieval"],
+    "difficulty": "intermediate",
+    "recommended_dataset_ids": [],
+    "suggested_tools": ["Python", "sentence-transformers", "NumPy"],
+    "expected_output": "A command-line or notebook search tool over twenty to a few hundred of your own documents, plus a written comparison against a keyword baseline on a handful of real queries.",
+    "milestones": [
+      "Collect a small corpus and decide how to split it into passages",
+      "Embed the passages and store the vectors",
+      "Retrieve the nearest passages for a query and read the results critically",
+      "Add a keyword baseline and compare the two on the same queries",
+      "Write down at least two queries where keyword search wins"
+    ],
+    "evaluation_approach": "Write ten queries yourself, with the passage you would consider correct for each, before you look at any results. Measure how often the right passage appears in the top three. Judging quality after seeing the output is how retrieval systems come to seem better than they are.",
+    "stretch_goals": [
+      "Combine keyword and vector scores and see whether the hybrid beats both",
+      "Try two chunk sizes and measure the difference rather than guessing",
+      "Add a reranking step over the top twenty results"
+    ],
+    "common_failure_modes": [
+      "Chunking mid-sentence so passages lose the context that made them relevant",
+      "Judging relevance after seeing results, which makes everything look reasonable",
+      "Assuming semantic search replaces keyword search rather than complementing it",
+      "Embedding whole documents, so long ones match everything weakly"
+    ],
+    "estimated_effort_hours": { "min": 6, "max": 15 },
+    "responsible_use_notes": "If you index your own notes or work documents, keep the corpus and the vectors local. Embeddings are not anonymous — passages can often be reconstructed or identified from them.",
+    "requires_gpu": false
+  },
+  {
+    "id": "proj-rag-assistant",
+    "title": "A retrieval-augmented assistant over documents you trust",
+    "problem_statement": "Build a question-answering assistant grounded in a specific document set, so that every answer can be traced back to a passage. Then spend most of your time on the part that actually determines quality: retrieval and evaluation, not prompting.",
+    "learning_objectives": [
+      "Assemble retrieval, prompting and generation into one pipeline",
+      "Attach provenance to every answer",
+      "Evaluate a generation system on more than a handful of examples",
+      "Diagnose whether a bad answer came from retrieval or from generation"
+    ],
+    "topics": ["rag", "semantic-search", "llm-evaluation", "prompt-design"],
+    "difficulty": "advanced",
+    "recommended_dataset_ids": [],
+    "suggested_tools": ["Python", "sentence-transformers", "an LLM API or a small local model"],
+    "expected_output": "A working assistant over a document set of your choosing, where each answer cites the passages it used, plus an evaluation set of at least thirty questions with recorded results.",
+    "milestones": [
+      "Build the retrieval half first and confirm it finds the right passages alone",
+      "Add generation, and make every answer cite its sources",
+      "Write an evaluation set of questions with known answers, including some the documents cannot answer",
+      "Measure how often the system answers when it should say it does not know",
+      "Trace ten failures back to either retrieval or generation"
+    ],
+    "evaluation_approach": "Evaluate retrieval and generation separately before evaluating them together — if retrieval never returns the right passage, no amount of prompting fixes the answer. Include unanswerable questions and measure how often the system declines rather than inventing something.",
+    "stretch_goals": [
+      "Add a step that refuses to answer when retrieved passages are weak",
+      "Compare two chunking strategies on the same evaluation set",
+      "Log every query and answer so failures can be reviewed later"
+    ],
+    "common_failure_modes": [
+      "Demonstrating on questions you already know work",
+      "No unanswerable questions in the evaluation set, so confident invention goes unmeasured",
+      "Blaming the model for what is actually a retrieval failure",
+      "Citations that point at passages the answer did not actually use"
+    ],
+    "estimated_effort_hours": { "min": 15, "max": 40 },
+    "responsible_use_notes": "A grounded assistant still invents things, and citations can look convincing while being wrong. Do not present one as authoritative, do not deploy it over documents you lack the rights to use, and if you use a hosted model, assume the documents you send leave your machine.",
+    "requires_gpu": false
+  },
+  {
+    "id": "proj-ner-extraction",
+    "title": "Extract entities from text, and find out where it fails",
+    "problem_statement": "Build a named-entity recogniser on annotated newswire, then run it on text from somewhere else entirely — social media, transcripts, your own emails — and document how badly it degrades. The gap between the two is the most useful thing this project teaches.",
+    "learning_objectives": [
+      "Frame entity recognition as sequence labelling",
+      "Read span-level precision, recall and F1 rather than token accuracy",
+      "Measure how far performance transfers outside the training domain"
+    ],
+    "topics": ["ner-information-extraction", "text-classification", "nlp-evaluation-safety"],
+    "difficulty": "intermediate",
+    "recommended_dataset_ids": ["ds-conll-2003"],
+    "suggested_tools": ["Python", "spaCy", "Hugging Face Transformers"],
+    "expected_output": "A working entity extractor with reported span-level scores on the original test set, plus a short written analysis of its behaviour on out-of-domain text.",
+    "milestones": [
+      "Reproduce a baseline on the standard test split",
+      "Inspect fifty predictions by hand and categorise the errors",
+      "Run the model on text from a completely different source",
+      "Write up the difference and what it implies about deployment"
+    ],
+    "evaluation_approach": "Report span-level precision, recall and F1 — not token accuracy, which is flattered enormously by the sheer number of non-entity tokens. Report the out-of-domain result separately and never average the two together.",
+    "stretch_goals": [
+      "Add an entity type the original annotation does not have",
+      "Compare a rule-based matcher against the statistical model on the same text",
+      "Estimate how much annotated data you would need for a new domain"
+    ],
+    "common_failure_modes": [
+      "Reporting token accuracy, which looks excellent and means almost nothing",
+      "Treating newswire performance as a prediction of performance anywhere else",
+      "Ignoring partial-span matches, which are the majority of real errors",
+      "Assuming the four coarse entity types map onto whatever you actually need"
+    ],
+    "estimated_effort_hours": { "min": 8, "max": 20 },
+    "responsible_use_notes": "Entity extraction over text about real people builds a structured record of them. Establish the rights position of the underlying corpus before use, and do not run extraction over personal correspondence belonging to anyone but yourself.",
+    "requires_gpu": false
+  },
+  {
+    "id": "proj-summarisation-evaluation",
+    "title": "Show that a summarisation metric disagrees with you",
+    "problem_statement": "Generate summaries for news articles, score them with an automatic metric, then rank the same summaries yourself. Measure how much the two rankings disagree. This is a project about evaluation rather than generation, and the result is usually uncomfortable.",
+    "learning_objectives": [
+      "Produce summaries and score them against references",
+      "Explain what overlap-based metrics do and do not capture",
+      "Quantify the gap between an automatic score and human judgement"
+    ],
+    "topics": ["summarization-generation", "nlp-evaluation-safety", "llm-evaluation"],
+    "difficulty": "intermediate",
+    "recommended_dataset_ids": ["ds-cnn-dailymail"],
+    "suggested_tools": ["Python", "Hugging Face Transformers", "a ROUGE implementation"],
+    "expected_output": "A set of at least thirty generated summaries with automatic scores and your own blind rankings, plus a written analysis of where the two disagree and why.",
+    "milestones": [
+      "Generate summaries for a sample of articles",
+      "Score them with an overlap metric against the provided references",
+      "Rank the same summaries yourself, blind to the scores",
+      "Compare the two rankings and find the largest disagreements",
+      "Write up what the metric rewarded that you did not"
+    ],
+    "evaluation_approach": "The object being evaluated here is the metric, not the model. Rank blind before looking at any scores, then measure rank correlation. Pay particular attention to summaries that scored well and that you judged poor.",
+    "stretch_goals": [
+      "Add a lead-three baseline that just copies the opening sentences and see how it scores",
+      "Try a second metric and see whether the two agree with each other",
+      "Have someone else rank the same summaries and measure your agreement with them"
+    ],
+    "common_failure_modes": [
+      "Looking at scores before ranking, which contaminates your judgement",
+      "Treating the provided highlights as ideal summaries when they are editorial teasers",
+      "Too few examples for a rank correlation to mean anything",
+      "Concluding the model is bad when the finding is that the metric is limited"
+    ],
+    "estimated_effort_hours": { "min": 10, "max": 25 },
+    "responsible_use_notes": "The underlying articles are journalistic content with their own rights; confirm the position before redistributing generated summaries. Do not present machine summaries of news as accurate accounts of events.",
+    "requires_gpu": false
+  },
+  {
+    "id": "proj-fairness-audit",
+    "title": "Audit a tabular model for group disparities",
+    "problem_statement": "Train an ordinary classifier on census-derived data, then measure how its errors are distributed across demographic groups. The model will reach a respectable accuracy and still behave unacceptably, and seeing both at once is the point.",
+    "learning_objectives": [
+      "Build a tabular classifier with mixed categorical and numeric features",
+      "Measure error rates separately by group rather than in aggregate",
+      "Explain why a single accuracy figure can hide an unacceptable model",
+      "Describe what removing a protected attribute does and does not achieve"
+    ],
+    "topics": ["responsible-ml", "supervised-learning", "interpretability"],
+    "difficulty": "intermediate",
+    "recommended_dataset_ids": ["ds-uci-adult"],
+    "suggested_tools": ["Python", "scikit-learn", "pandas"],
+    "expected_output": "A notebook reporting overall accuracy alongside per-group error rates, and a written argument about whether this model should be used for anything at all.",
+    "milestones": [
+      "Train a straightforward classifier and record its overall accuracy",
+      "Break false positive and false negative rates down by group",
+      "Retrain with the protected attribute removed and measure what changed",
+      "Write down what the disparity means and what it does not tell you"
+    ],
+    "evaluation_approach": "Report overall accuracy, then per-group false positive and false negative rates. Compare several fairness definitions on the same model and note that they conflict — you will find you cannot satisfy all of them at once, which is the substantive lesson.",
+    "stretch_goals": [
+      "Apply one mitigation technique and measure both what improved and what it cost",
+      "Use a feature-attribution method and check whether the explanation is stable",
+      "Write the model card you would need before anyone deployed this"
+    ],
+    "common_failure_modes": [
+      "Removing the protected attribute and assuming the problem is solved, when correlated features carry it anyway",
+      "Reporting only aggregate accuracy, which conceals the entire finding",
+      "Picking whichever fairness definition your model happens to satisfy",
+      "Treating the dataset's historical disparities as facts about people rather than about the data"
+    ],
+    "estimated_effort_hours": { "min": 8, "max": 20 },
+    "responsible_use_notes": "This dataset encodes the inequities of the period it was collected in, and includes race, sex and national-origin attributes. Any model trained on it is a teaching exercise only. Do not present results as findings about any group of people, and never adapt this into a tool that makes decisions about individuals.",
+    "requires_gpu": false
+  }
+]

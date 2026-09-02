@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 9.** Dashboard, learning paths, resource library, dataset explorer, papers, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 135 records. Projects, glossary, link health and perf/SEO hardening remain.
+> **Status: Phase 10.** Dashboard, learning paths, resource library, dataset explorer, papers, project ideas, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 141 records. Glossary, link health and perf/SEO hardening remain.
 
 ---
 
@@ -82,7 +82,7 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/projects`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
 | Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
@@ -218,6 +218,27 @@ Of the seven seeded papers, **only one** states a venue on its arXiv page ("Acce
 
 **No benchmark figures are reproduced**, in either summary. A test scans for score patterns and fails if one creeps in: a number without its exact evaluation setup is not comparable to anything.
 
+## Projects
+
+Six projects, grouped by level, each anchored to a real dataset in the catalogue or explicitly telling you to bring your own.
+
+Every project carries the same field set, and a parameterised test asserts **every one of them renders all of it**:
+
+- What it teaches, and what you should end up with
+- **Numbered milestones** — the order is the point
+- **How to tell whether it worked**, decided before you start so the result cannot be chosen after the fact
+- **How this usually goes wrong** — given its own warning-toned block rather than tucked at the end, because knowing the failure modes is worth more than another feature idea
+- **Responsible-use notes**, rendered as a standing warning
+
+### Constraints these hold to
+
+- **Nothing needs rented hardware.** `requires_gpu` defaults false, is surfaced as a badge only when true, and a test asserts every seeded project stays laptop-feasible. A catalogue of projects that quietly assume a cloud budget is useless to the person it is for.
+- **Effort is a range with its assumption stated** — that you do the evaluation step rather than stopping once something runs.
+- **Tools are suggestions, not requirements**, and the page says so.
+- Wherever a project recommends a dataset, the **licence caution is repeated** rather than assumed to have been read on the dataset page.
+
+Several projects are deliberately about evaluation rather than model-building — showing that a summarisation metric disagrees with your own judgement, or that a respectable accuracy hides unacceptable group disparities. Those are the lessons that transfer.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -311,8 +332,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 7 | Learning paths and progress | ✅ Done — **MVP complete** |
 | 8 | Datasets and benchmarks explorer | ✅ Done |
 | 9 | Papers and research | ✅ Done |
-| 10 | Project explorer | Next |
-| 11 | Glossary and concept pages | |
+| 10 | Project explorer | ✅ Done |
+| 11 | Glossary and concept pages | Next |
 | 12 | Link health and editorial operations | |
 | 13 | SEO, performance and accessibility hardening | |
 

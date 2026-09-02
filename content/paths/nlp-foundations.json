@@ -7,7 +7,10 @@
     "topics": ["python-for-ai"],
     "description": "Basic Python. No linear algebra needed to start, though module three is easier if you have met vectors and matrices before."
   },
-  "estimated_hours": { "min": 25, "max": 45 },
+  "estimated_hours": {
+    "min": 25,
+    "max": 45
+  },
   "estimate_assumptions": "Assumes prior Python, around five focused hours a week, and that you actually do the checkpoints. Individual pace varies enormously — treat this as a range, not a schedule.",
   "modules": [
     {
@@ -159,7 +162,7 @@
       ]
     }
   ],
-  "suggested_project_ids": [],
+  "suggested_project_ids": ["proj-text-classification-baseline", "proj-semantic-search", "proj-ner-extraction"],
   "completion_criteria": "Every required item in all four modules marked complete, including both checkpoints.",
   "next_path_ids": [],
   "status": "unverified"

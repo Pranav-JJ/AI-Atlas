@@ -57,6 +57,13 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
   })
 
+  it('renders the papers index at /papers', async () => {
+    renderAt('/papers')
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(
+      /papers and research/i,
+    )
+  })
+
   it('renders the dataset explorer at /datasets', async () => {
     renderAt('/datasets')
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(

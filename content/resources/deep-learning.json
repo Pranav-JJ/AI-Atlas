@@ -14,7 +14,10 @@
     "format": "code",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai", "linear-algebra"], "resources": [] },
+    "prerequisites": {
+      "topics": ["python-for-ai", "linear-algebra"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -47,7 +50,10 @@
     "format": "code",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["optimization-backprop"], "resources": ["res-pytorch-tutorials"] },
+    "prerequisites": {
+      "topics": ["optimization-backprop"],
+      "resources": ["res-pytorch-tutorials"]
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -80,7 +86,10 @@
     "format": "interactive",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["linear-algebra", "calculus-for-ml", "python-for-ai"], "resources": [] },
+    "prerequisites": {
+      "topics": ["linear-algebra", "calculus-for-ml", "python-for-ai"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -113,7 +122,10 @@
     "format": "video",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai", "calculus-for-ml"], "resources": [] },
+    "prerequisites": {
+      "topics": ["python-for-ai", "calculus-for-ml"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -150,7 +162,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["nn-fundamentals", "linear-algebra"], "resources": [] },
+    "prerequisites": {
+      "topics": ["nn-fundamentals", "linear-algebra"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -183,7 +198,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["sequence-modeling"], "resources": [] },
+    "prerequisites": {
+      "topics": ["sequence-modeling"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -200,55 +218,5 @@
     "theory_vs_practice": "theory",
     "status": "unverified",
     "added_at": "2026-08-25"
-  },
-  {
-    "id": "res-paper-attention-is-all-you-need",
-    "title": "Attention Is All You Need",
-    "description": "The paper introducing the transformer, an architecture based entirely on attention mechanisms, removing recurrence and convolution from sequence transduction models.",
-    "url": "https://arxiv.org/abs/1706.03762",
-    "resource_type": "paper",
-    "provider_id": "arxiv",
-    "author": null,
-    "topics": ["transformers", "attention"],
-    "subtopics": [],
-    "difficulty": "advanced",
-    "estimated_duration_minutes": 180,
-    "format": "text",
-    "cost_type": "free",
-    "language": "en",
-    "prerequisites": { "topics": ["attention", "sequence-modeling"], "resources": ["res-illustrated-transformer"] },
-    "source_date": null,
-    "last_verified_at": null,
-    "verified_by": null,
-    "quality_notes": null,
-    "why_useful": "The primary source for the architecture underneath nearly everything current. Short, and far more readable after an illustrated explainer than before one.",
-    "learning_outcomes": [
-      "Read the original formulation of scaled dot-product attention",
-      "Understand the encoder-decoder design as originally proposed",
-      "Distinguish the original claims from later folklore"
-    ],
-    "is_beginner_friendly": false,
-    "is_project_based": false,
-    "has_certificate": false,
-    "theory_vs_practice": "theory",
-    "status": "unverified",
-    "added_at": "2026-08-25",
-    "authors": [
-      "Ashish Vaswani",
-      "Noam Shazeer",
-      "Niki Parmar",
-      "Jakob Uszkoreit",
-      "Llion Jones",
-      "Aidan N. Gomez",
-      "Lukasz Kaiser",
-      "Illia Polosukhin"
-    ],
-    "year": 2017,
-    "venue": null,
-    "peer_review_status": "unknown",
-    "abstract_summary": null,
-    "key_idea": null,
-    "code_url": null,
-    "dataset_ids": []
   }
 ]

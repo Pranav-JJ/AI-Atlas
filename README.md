@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 8.** Dashboard, learning paths, resource library, dataset explorer, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 132 records. Papers, projects, glossary, link health and perf/SEO hardening remain.
+> **Status: Phase 9.** Dashboard, learning paths, resource library, dataset explorer, papers, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 135 records. Projects, glossary, link health and perf/SEO hardening remain.
 
 ---
 
@@ -82,7 +82,7 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
 | Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
@@ -197,6 +197,27 @@ The requirement was that no dataset can be shown without its licence field *and*
 - **Benchmark metrics are recorded; benchmark scores are not.** A number without its exact evaluation setup is not comparable to anything. A test asserts no score field ever creeps in.
 - Every dataset records **known limitations**. A dataset entry with no caveats is almost always an incomplete entry, so a test requires at least one.
 
+## Papers
+
+Papers live in `content/papers/` and, like datasets, load into the same resource collection — so they appear in the library and keep one canonical URL at `/library/:id`. `/papers` is a specialised index over them.
+
+### Two summaries, never confusable
+
+Each paper carries two summaries that must never be mistaken for one another:
+
+- **"What the source says"** — a paraphrase of the paper's own abstract, read from the source rather than recalled.
+- **"Our reading"** — AI Atlas's interpretation, explicitly attributed to us.
+
+They get different headings, different backgrounds and a separate attribution line each, and each sits in its own labelled region so a screen reader user can tell them apart too. Tests assert both headings render for every paper, and that the two texts are never identical — identical text would make the separation theatre.
+
+### Publication status is never assumed
+
+`peer_review_status` is recorded **only where the source page states a venue**. Being on arXiv, or being widely cited, is not evidence of peer review.
+
+Of the seven seeded papers, **only one** states a venue on its arXiv page ("Accepted at NeurIPS 2020"). The other six are marked `unknown` — with the interface saying so plainly rather than leaving the field blank for a reader to fill in optimistically. A test asserts that unknown papers have no venue, and that any paper claiming peer review names one.
+
+**No benchmark figures are reproduced**, in either summary. A test scans for score patterns and fails if one creeps in: a number without its exact evaluation setup is not comparable to anything.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -289,8 +310,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 6 | Dashboard | ✅ Done |
 | 7 | Learning paths and progress | ✅ Done — **MVP complete** |
 | 8 | Datasets and benchmarks explorer | ✅ Done |
-| 9 | Papers and research | Next |
-| 10 | Project explorer | |
+| 9 | Papers and research | ✅ Done |
+| 10 | Project explorer | Next |
 | 11 | Glossary and concept pages | |
 | 12 | Link health and editorial operations | |
 | 13 | SEO, performance and accessibility hardening | |

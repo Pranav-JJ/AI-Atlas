@@ -14,7 +14,10 @@
     "format": "interactive",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai"], "resources": [] },
+    "prerequisites": {
+      "topics": ["python-for-ai"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -47,7 +50,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["transformers"], "resources": [] },
+    "prerequisites": {
+      "topics": ["transformers"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -80,7 +86,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai"], "resources": [] },
+    "prerequisites": {
+      "topics": ["python-for-ai"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -113,7 +122,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai"], "resources": [] },
+    "prerequisites": {
+      "topics": ["python-for-ai"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -146,7 +158,10 @@
     "format": "interactive",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["python-for-ai"], "resources": ["res-spacy-101"] },
+    "prerequisites": {
+      "topics": ["python-for-ai"],
+      "resources": ["res-spacy-101"]
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -179,7 +194,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["probability-statistics"], "resources": [] },
+    "prerequisites": {
+      "topics": ["probability-statistics"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -212,7 +230,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["deep-learning", "linear-algebra"], "resources": [] },
+    "prerequisites": {
+      "topics": ["deep-learning", "linear-algebra"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -245,7 +266,10 @@
     "format": "text",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["text-preprocessing-tokenization"], "resources": [] },
+    "prerequisites": {
+      "topics": ["text-preprocessing-tokenization"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -278,7 +302,10 @@
     "format": "code",
     "cost_type": "free",
     "language": "en",
-    "prerequisites": { "topics": ["representations-embeddings"], "resources": [] },
+    "prerequisites": {
+      "topics": ["representations-embeddings"],
+      "resources": []
+    },
     "source_date": null,
     "last_verified_at": null,
     "verified_by": null,
@@ -295,46 +322,5 @@
     "theory_vs_practice": "practice",
     "status": "unverified",
     "added_at": "2026-08-25"
-  },
-  {
-    "id": "res-paper-bert",
-    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
-    "description": "The paper introducing BERT, a bidirectional transformer encoder pretrained with masked language modelling and next-sentence prediction, then fine-tuned per task.",
-    "url": "https://arxiv.org/abs/1810.04805",
-    "resource_type": "paper",
-    "provider_id": "arxiv",
-    "author": null,
-    "topics": ["transformers-nlp", "language-modeling"],
-    "subtopics": [],
-    "difficulty": "advanced",
-    "estimated_duration_minutes": 150,
-    "format": "text",
-    "cost_type": "free",
-    "language": "en",
-    "prerequisites": { "topics": ["transformers"], "resources": ["res-paper-attention-is-all-you-need"] },
-    "source_date": null,
-    "last_verified_at": null,
-    "verified_by": null,
-    "quality_notes": null,
-    "why_useful": "Established the pretrain-then-fine-tune pattern that still shapes how NLP systems are built, and remains the clearest statement of why bidirectional context matters.",
-    "learning_outcomes": [
-      "Explain masked language modelling as a pretraining objective",
-      "Describe the pretrain then fine-tune workflow",
-      "Distinguish encoder-only from decoder-only model families"
-    ],
-    "is_beginner_friendly": false,
-    "is_project_based": false,
-    "has_certificate": false,
-    "theory_vs_practice": "theory",
-    "status": "unverified",
-    "added_at": "2026-08-25",
-    "authors": ["Jacob Devlin", "Ming-Wei Chang", "Kenton Lee", "Kristina Toutanova"],
-    "year": 2018,
-    "venue": null,
-    "peer_review_status": "unknown",
-    "abstract_summary": null,
-    "key_idea": null,
-    "code_url": null,
-    "dataset_ids": []
   }
 ]

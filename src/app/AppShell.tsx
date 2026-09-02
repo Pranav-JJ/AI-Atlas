@@ -106,7 +106,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               <nav aria-label="Footer">
                 <h2 className="text-fg text-sm font-semibold">Available now</h2>
                 <ul className="mt-3 space-y-2">
-                  {[...PRIMARY_NAV, { to: '/datasets', label: 'Datasets' }].map((item) => (
+                  {[
+                    ...PRIMARY_NAV,
+                    { to: '/datasets', label: 'Datasets' },
+                    { to: '/papers', label: 'Papers' },
+                  ].map((item) => (
                     <li key={item.to}>
                       <Link
                         to={item.to}

@@ -25,6 +25,7 @@ const Onboarding = lazy(() =>
   import('./pages/Onboarding.tsx').then((m) => ({ default: m.Onboarding })),
 )
 const Datasets = lazy(() => import('./pages/Datasets.tsx').then((m) => ({ default: m.Datasets })))
+const Papers = lazy(() => import('./pages/Papers.tsx').then((m) => ({ default: m.Papers })))
 const Paths = lazy(() => import('./pages/Paths.tsx').then((m) => ({ default: m.Paths })))
 const PathDetail = lazy(() =>
   import('./pages/PathDetail.tsx').then((m) => ({ default: m.PathDetail })),
@@ -65,6 +66,7 @@ export function App() {
             <Route path="/library/:resourceId" element={<ResourceDetail />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/datasets" element={<Datasets />} />
+            <Route path="/papers" element={<Papers />} />
             <Route path="/paths" element={<Paths />} />
             <Route path="/paths/:pathId" element={<PathDetail />} />
             <Route path="/progress" element={<Progress />} />

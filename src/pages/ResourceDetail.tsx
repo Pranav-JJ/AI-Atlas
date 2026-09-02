@@ -7,6 +7,7 @@ import {
   Callout,
   Chip,
   DatasetDetails,
+  PaperClaims,
   ExternalLink,
   ResourceActions,
   VerificationChip,
@@ -15,8 +16,8 @@ import {
 import { providers, resources, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
 import { isDataset } from '@/lib/datasets.ts'
+import { isPaper } from '@/lib/papers.ts'
 import { COST_LABELS, costTone, formatDuration, RESOURCE_TYPE_LABELS } from '@/lib/format.ts'
-import type { AnyResource } from '@/lib/schema/index.ts'
 import { explainCuratedScore } from '@/lib/selectors/sortResources.ts'
 import { getTopic } from '@/lib/selectors/topics.ts'
 import { useUserStore } from '@/lib/storage/store.ts'
@@ -25,18 +26,6 @@ import { NotFound } from './NotFound.tsx'
 
 const providersById = new Map(providers.map((p) => [p.id, p]))
 const byId = new Map(resources.map((r) => [r.id, r]))
-
-function isPaper(resource: AnyResource): resource is AnyResource & {
-  authors: string[]
-  year: number | null
-  venue: string | null
-  peer_review_status: string
-  abstract_summary: string | null
-  key_idea: string | null
-  code_url: string | null
-} {
-  return resource.resource_type === 'paper'
-}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -194,27 +183,9 @@ export function ResourceDetail() {
               component, so a dataset can never be shown without both. */}
           {isDataset(resource) ? <DatasetDetails dataset={resource} /> : null}
 
-          {isPaper(resource) ? (
-            <section className="mt-8" aria-labelledby="paper">
-              <h2 id="paper" className="text-fg text-sm font-semibold">
-                Paper details
-              </h2>
-              <dl className="mt-2">
-                {resource.authors.length > 0 ? (
-                  <Field label="Authors">{resource.authors.join(', ')}</Field>
-                ) : null}
-                {resource.year !== null ? <Field label="Year">{resource.year}</Field> : null}
-                <Field label="Venue">{resource.venue ?? 'Not recorded'}</Field>
-                {/* Never omitted, and never guessed. An arXiv id is not evidence
-                    of peer review. */}
-                <Field label="Peer review">
-                  {resource.peer_review_status === 'unknown'
-                    ? 'Unknown — we have not confirmed this'
-                    : resource.peer_review_status}
-                </Field>
-              </dl>
-            </section>
-          ) : null}
+          {/* Claims and our reading are visibly separated, and publication
+              status is always rendered — including when it is unknown. */}
+          {isPaper(resource) ? <PaperClaims paper={resource} /> : null}
 
           {relatedTopics.length > 0 ? (
             <section className="mt-8" aria-labelledby="topics">

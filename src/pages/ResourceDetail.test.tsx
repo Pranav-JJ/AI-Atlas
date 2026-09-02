@@ -181,9 +181,11 @@ describe('provenance', () => {
   })
 
   it('reports peer review as unknown rather than omitting it', () => {
-    // An arXiv identifier is not evidence of peer review.
+    // An arXiv identifier is not evidence of peer review. Wording now comes
+    // from PaperClaims, which states the status and why it is not assumed.
     renderDetail('a-paper')
-    expect(screen.getByText(/unknown — we have not confirmed this/i)).toBeVisible()
+    expect(screen.getByText(/publication status unknown/i)).toBeVisible()
+    expect(screen.getByText(/not evidence either way/i)).toBeVisible()
   })
 
   it('shows "Never" rather than a blank for an unverified record', () => {
@@ -191,9 +193,21 @@ describe('provenance', () => {
     expect(screen.getByText('Never')).toBeVisible()
   })
 
-  it('shows "Not recorded" for an unknown length rather than 0', () => {
+  it('shows "None recorded" rather than a blank venue', () => {
     renderDetail('a-paper')
-    expect(screen.getAllByText(/not recorded/i).length).toBeGreaterThan(0)
+    expect(screen.getByText('None recorded')).toBeVisible()
+  })
+
+  it('omits the summary section entirely when neither summary exists', () => {
+    // This fixture has no abstract_summary and no key_idea, so PaperClaims must
+    // render nothing rather than two empty labelled boxes. The populated case is
+    // covered against real content in Papers.test.tsx.
+    renderDetail('a-paper')
+
+    expect(screen.queryByRole('heading', { name: /what the source says/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /our reading/i })).not.toBeInTheDocument()
+    // Publication status is still rendered, because it is never optional.
+    expect(screen.getByText('Peer review')).toBeVisible()
   })
 })
 

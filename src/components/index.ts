@@ -1,4 +1,5 @@
 export { AccessBadge, DatasetDetails } from './DatasetDetails.tsx'
+export { PaperClaims } from './PaperClaims.tsx'
 export { Badge, type Tone } from './Badge.tsx'
 export { Breadcrumbs, type Crumb } from './Breadcrumbs.tsx'
 export { Callout } from './Callout.tsx'

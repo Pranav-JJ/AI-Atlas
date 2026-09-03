@@ -57,6 +57,11 @@ describe('routing', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
   })
 
+  it('renders the glossary at /glossary', async () => {
+    renderAt('/glossary')
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/glossary/i)
+  })
+
   it('renders the project explorer at /projects', async () => {
     renderAt('/projects')
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/project ideas/i)
@@ -114,7 +119,7 @@ describe('routing', () => {
     // A stub page behind a working link is worse than an honest 404.
     // findBy, not getBy: the route tree sits inside a Suspense boundary, so the
     // first paint can be the fallback rather than the page.
-    for (const path of ['/glossary', '/nothing-here']) {
+    for (const path of ['/nothing-here', '/not-a-section', '/still-nothing']) {
       const { unmount } = renderAt(path)
       expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent(/page not found/i)
       unmount()
@@ -175,17 +180,16 @@ describe('app shell', () => {
     expect(within(nav).getByRole('link', { name: 'Methodology' })).toBeVisible()
   })
 
-  it('does not link to features that do not exist yet', () => {
-    // The footer lists them as plain text under "Planned" instead. Scoped to the
-    // footer because some of these words legitimately appear elsewhere on the
-    // page — "Learning paths" is also a catalogue count on the home page.
+  it('links every surface that exists, and lists none that does not', () => {
+    // Every planned surface now exists, so the footer's "Planned" column is
+    // gone. What remains must all be real links.
     renderAt('/')
     const footer = within(screen.getByRole('contentinfo'))
 
-    for (const label of [/^Glossary$/]) {
-      expect(footer.queryByRole('link', { name: label })).not.toBeInTheDocument()
-      expect(footer.getByText(label)).toBeVisible()
+    for (const label of [/^Datasets$/, /^Papers$/, /^Projects$/, /^Glossary$/]) {
+      expect(footer.getByRole('link', { name: label })).toBeVisible()
     }
+    expect(footer.queryByText('Planned')).not.toBeInTheDocument()
   })
 
   it('does not announce the mobile navigation twice to screen readers', () => {

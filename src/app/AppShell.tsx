@@ -20,9 +20,6 @@ const PRIMARY_NAV = [
   { to: '/about', label: 'Methodology', end: false },
 ] as const
 
-/** Sections that exist as plans rather than pages, listed honestly in the footer. */
-const PLANNED = ['Glossary'] as const
-
 function navLinkClass({ isActive }: { isActive: boolean }): string {
   return [
     'rounded px-2.5 py-1.5 text-sm transition-colors',
@@ -111,6 +108,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     { to: '/datasets', label: 'Datasets' },
                     { to: '/papers', label: 'Papers' },
                     { to: '/projects', label: 'Projects' },
+                    { to: '/glossary', label: 'Glossary' },
                   ].map((item) => (
                     <li key={item.to}>
                       <Link
@@ -124,15 +122,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </ul>
               </nav>
 
-              <div>
-                <h2 className="text-fg text-sm font-semibold">Planned</h2>
-                {/* Listed as text, not links: they do not exist yet. */}
-                <ul className="text-fg-subtle mt-3 space-y-2 text-sm">
-                  {PLANNED.map((label) => (
-                    <li key={label}>{label}</li>
-                  ))}
-                </ul>
-              </div>
+              {/* There is no "Planned" column any more. Every surface the plan
+                  described now exists, so listing absent features would be
+                  inventing a roadmap rather than reporting one. */}
             </div>
           </div>
 

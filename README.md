@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 10.** Dashboard, learning paths, resource library, dataset explorer, papers, project ideas, topic map, bookmarks and progress tracking are live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 141 records. Glossary, link health and perf/SEO hardening remain.
+> **Status: Phase 11.** Every surface the plan described now exists at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/) — dashboard, paths, library, datasets, papers, projects, glossary, topic map and progress — over a validated catalogue of 160 records. The remaining phases harden rather than add: link health, then SEO/performance/accessibility.
 
 ---
 
@@ -82,7 +82,7 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/projects`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
+| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/projects`, `/glossary`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
 | Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
 Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
@@ -239,6 +239,28 @@ Every project carries the same field set, and a parameterised test asserts **eve
 
 Several projects are deliberately about evaluation rather than model-building — showing that a summarisation metric disagrees with your own judgement, or that a respectable accuracy hides unacceptable group disparities. Those are the lessons that transfer.
 
+## Glossary and concept pages
+
+19 terms, each leading with a plain-language definition and — always visible — **what people usually get wrong about it**. The misconception is often the most useful thing on the page, and someone who already believes they understand a term will never expand a collapsed section to find it.
+
+Progressive disclosure means the plain definition, the worked example and the misconception are visible without any interaction; the technical explanation, formula and code sit behind one "Go deeper" toggle. A beginner never has to expand anything to get a usable answer.
+
+### The Markdown gate — decided by not taking it
+
+The plan set a condition: *if* Markdown is introduced here, an allowlist sanitiser and XSS fixture tests become part of this phase's definition of done.
+
+**Markdown was not introduced.** Glossary content is plain strings that React escapes, so there is no HTML path to sanitise, no parser to keep patched, and no `dangerouslySetInnerHTML` exemption to justify. The ESLint ban stands unbroken across the whole codebase.
+
+The safety tests were written anyway, because "we don't render HTML" is a claim that should be provable:
+
+- Fixtures containing `<script>`, `<img onerror>`, `javascript:` links and `<iframe>` are rendered and asserted to appear as **literal text**, with no such element produced.
+- A real glossary page is rendered and asserted to contain no `script`, `iframe` or `object` element.
+- Source files are checked for `dangerouslySetInnerHTML` directly, which catches the case where someone disables the lint rule inline.
+
+**LaTeX is shown as source, not typeset.** Rendering it would mean adding a maths typesetter that emits HTML — a large dependency and a fresh injection surface, for a handful of short formulas. The page says the formula is LaTeX source rather than pretending otherwise.
+
+Runtime dependencies remain six: `react`, `react-dom`, `react-router`, `zod`, `zustand`, `minisearch`. No Markdown parser, no sanitiser, no syntax highlighter, no maths renderer.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -333,8 +355,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 8 | Datasets and benchmarks explorer | ✅ Done |
 | 9 | Papers and research | ✅ Done |
 | 10 | Project explorer | ✅ Done |
-| 11 | Glossary and concept pages | Next |
-| 12 | Link health and editorial operations | |
+| 11 | Glossary and concept pages | ✅ Done |
+| 12 | Link health and editorial operations | Next |
 | 13 | SEO, performance and accessibility hardening | |
 
 ## Two rules this product will not bend on

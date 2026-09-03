@@ -23,6 +23,7 @@ export const STATIC_ROUTES = [
   '/datasets',
   '/papers',
   '/projects',
+  '/glossary',
   '/topics',
   '/progress',
   '/onboarding',

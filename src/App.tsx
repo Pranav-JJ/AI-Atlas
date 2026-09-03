@@ -27,6 +27,10 @@ const Onboarding = lazy(() =>
 const Datasets = lazy(() => import('./pages/Datasets.tsx').then((m) => ({ default: m.Datasets })))
 const Papers = lazy(() => import('./pages/Papers.tsx').then((m) => ({ default: m.Papers })))
 const Projects = lazy(() => import('./pages/Projects.tsx').then((m) => ({ default: m.Projects })))
+const Glossary = lazy(() => import('./pages/Glossary.tsx').then((m) => ({ default: m.Glossary })))
+const GlossaryTerm = lazy(() =>
+  import('./pages/GlossaryTerm.tsx').then((m) => ({ default: m.GlossaryTerm })),
+)
 const ProjectDetail = lazy(() =>
   import('./pages/ProjectDetail.tsx').then((m) => ({ default: m.ProjectDetail })),
 )
@@ -53,7 +57,7 @@ function RouteFallback() {
  * working link is worse than an honest 404, because it costs the user a click
  * to discover the same thing.
  *
- * The glossary arrives in a later phase.
+ * Every planned surface now exists; remaining phases harden rather than add.
  */
 export function App() {
   const { pathname } = useLocation()
@@ -71,6 +75,8 @@ export function App() {
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/datasets" element={<Datasets />} />
             <Route path="/papers" element={<Papers />} />
+            <Route path="/glossary" element={<Glossary />} />
+            <Route path="/glossary/:termId" element={<GlossaryTerm />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:projectId" element={<ProjectDetail />} />
             <Route path="/paths" element={<Paths />} />

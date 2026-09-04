@@ -1,0 +1,132 @@
+name: Link health
+
+on:
+  schedule:
+    # Weekly, early Monday UTC. Link rot is a slow process; checking more often
+    # would add load on other people's servers for no extra signal.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+# Never runs alongside itself, and never blocks anything else.
+concurrency:
+  group: link-health
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Check external links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.1'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build content
+        run: npm run content:build
+
+      - name: Check links
+        env:
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        # The script always exits 0. `|| true` is belt and braces: a crash in
+        # the checker itself must not turn into a red mark that looks like a
+        # content problem.
+        run: node scripts/check-links.ts --out link-report.md || true
+
+      - name: Open or update the tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+
+            if (!fs.existsSync('link-report.md')) {
+              core.notice('No report produced — the checker did not complete. Nothing to report.')
+              return
+            }
+
+            const body = fs.readFileSync('link-report.md', 'utf8')
+            const title = 'Link health: URLs needing a human look'
+            const label = 'link-health'
+
+            // One issue, rewritten each run, rather than a new one every week.
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label,
+              per_page: 10,
+            })
+
+            const found = existing.data.find((issue) => issue.title === title)
+            const needsAttention = body.includes('appear') && body.includes('to be gone')
+
+            if (found) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: found.number,
+                body,
+              })
+              core.notice(`Updated issue #${found.number}`)
+
+              // Close it once there is nothing left to act on, so an open issue
+              // always means real work rather than background noise.
+              if (!needsAttention) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: found.number,
+                  state: 'closed',
+                  state_reason: 'completed',
+                })
+                core.notice('Nothing needs attention; issue closed.')
+              }
+              return
+            }
+
+            if (!needsAttention) {
+              core.notice('Nothing needs attention and no issue is open. Doing nothing.')
+              return
+            }
+
+            // The label may not exist yet on a fresh repository.
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+                color: 'd4a72c',
+                description: 'Automated external link availability checks',
+              })
+            } catch {
+              // Already exists. Nothing to do.
+            }
+
+            const created = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: [label],
+            })
+            core.notice(`Opened issue #${created.data.number}`)
+
+      - name: Keep the report as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-report-${{ github.run_id }}
+          path: link-report.md
+          retention-days: 30
+          if-no-files-found: ignore

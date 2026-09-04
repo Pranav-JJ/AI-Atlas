@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 11.** Every surface the plan described now exists at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/) — dashboard, paths, library, datasets, papers, projects, glossary, topic map and progress — over a validated catalogue of 160 records. The remaining phases harden rather than add: link health, then SEO/performance/accessibility.
+> **Status: Phase 12.** Every surface the plan described exists at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 160 records, with a scheduled link-health check and a report-a-problem affordance on every record. One phase remains: SEO, performance and accessibility hardening.
 
 ---
 
@@ -29,6 +29,7 @@ npm run dev     # http://localhost:5173/AI-Atlas/
 | `npm run preview:pages` | Serve `dist/` under **GitHub Pages' actual rules** — see below |
 | `npm run content:validate` | Check `content/` against the schemas and the 14 editorial rules |
 | `npm run content:build` | Compile `content/` into typed modules + a prebuilt search index |
+| `npm run links:check` | Check every external URL and report; never edits content, always exits 0 |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (includes the security guardrails below) |
 | `npm run lint:fix` | ESLint with autofix |
@@ -261,6 +262,36 @@ The safety tests were written anyway, because "we don't render HTML" is a claim 
 
 Runtime dependencies remain six: `react`, `react-dom`, `react-router`, `zod`, `zustand`, `minisearch`. No Markdown parser, no sanitiser, no syntax highlighter, no maths renderer.
 
+## Link health
+
+Links rot. A weekly [scheduled workflow](.github/workflows/link-check.yml) checks every external URL in the catalogue — 75 of them — and maintains a single tracking issue.
+
+Two rules govern it, and both are enforced rather than intended:
+
+1. **It never edits content.** Deciding a link is dead is an editorial call. A script that rewrites records on a 404 will eventually retire something because a CDN had a bad afternoon. The workflow requests `contents: read` only, and a test asserts it never asks for write.
+2. **It never fails a build.** It runs as its own workflow, exits 0 whatever it finds, and is wrapped in `|| true` so that a crash in the checker cannot masquerade as a content problem. Third-party flakiness must not gate publishing.
+
+### Only evidence counts as evidence
+
+A checker that cries wolf gets ignored, and an ignored checker is worse than none. So the classification separates two very different things:
+
+| Response | Verdict |
+| --- | --- |
+| 404, 410 | **Gone** — the server positively says there is nothing there. Raised for review. |
+| 401, 403, 405, 429 | Blocked. Bot protection and rate limits are routine for automated requests and say nothing about the link. |
+| 5xx | Server error, retried once, then recorded as transient. |
+| DNS / TLS / timeout | Unreachable. A CI resolver, an outage and a retired domain are indistinguishable from here. |
+
+Only **gone** reaches the actionable section of the issue. Everything else goes in a collapsed block explicitly labelled *not evidence that a link is dead*. The issue closes itself when nothing is left to act on, so an open issue always means real work.
+
+The check is polite: HEAD before GET, four at a time, a gap between requests, one retry, a 25-second timeout, and an honest user agent identifying the project.
+
+### Reporting a problem
+
+Every resource, dataset, paper, project, path and glossary page carries a **"Report it"** link that opens a GitHub issue prefilled with the record id, the recorded URL and the categories we actually act on. Someone who has to compose a report from scratch usually will not.
+
+It is a plain GitHub link rather than a form, because this is a static site with no backend — anything else would mean a third-party form service or an endpoint that does not exist.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -356,8 +387,8 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 9 | Papers and research | ✅ Done |
 | 10 | Project explorer | ✅ Done |
 | 11 | Glossary and concept pages | ✅ Done |
-| 12 | Link health and editorial operations | Next |
-| 13 | SEO, performance and accessibility hardening | |
+| 12 | Link health and editorial operations | ✅ Done |
+| 13 | SEO, performance and accessibility hardening | Next |
 
 ## Two rules this product will not bend on
 

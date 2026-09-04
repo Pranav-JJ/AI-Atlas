@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 
-import { Badge, Breadcrumbs, Callout, Chip } from '@/components/index.ts'
+import { Badge, Breadcrumbs, Callout, Chip, ReportProblem } from '@/components/index.ts'
 import { glossary, resources, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
 import { RESOURCE_TYPE_LABELS } from '@/lib/format.ts'
@@ -152,6 +152,14 @@ export function GlossaryTerm() {
               </ul>
             </section>
           ) : null}
+          <ReportProblem
+            context={{
+              recordId: entry.id,
+              title: entry.term,
+              url: null,
+              kind: 'glossary term',
+            }}
+          />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">

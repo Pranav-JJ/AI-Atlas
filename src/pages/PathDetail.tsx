@@ -6,6 +6,7 @@ import {
   Callout,
   Chip,
   ProgressBar,
+  ReportProblem,
   VerificationChip,
 } from '@/components/index.ts'
 import { learningPaths, projects, resources, topics } from '@/content/generated/index.ts'
@@ -289,6 +290,9 @@ export function PathDetail() {
               </p>
             )}
           </section>
+          <ReportProblem
+            context={{ recordId: path.id, title: path.title, url: null, kind: 'path' }}
+          />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">

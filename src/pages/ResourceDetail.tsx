@@ -8,6 +8,7 @@ import {
   Chip,
   DatasetDetails,
   PaperClaims,
+  ReportProblem,
   ExternalLink,
   ResourceActions,
   VerificationChip,
@@ -201,6 +202,15 @@ export function ResourceDetail() {
               </ul>
             </section>
           ) : null}
+
+          <ReportProblem
+            context={{
+              recordId: resource.id,
+              title: resource.title,
+              url: resource.url,
+              kind: isDataset(resource) ? 'dataset' : isPaper(resource) ? 'paper' : 'resource',
+            }}
+          />
 
           {related.length > 0 ? (
             <section className="mt-10" aria-labelledby="related">

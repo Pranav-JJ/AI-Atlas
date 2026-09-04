@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router'
 
-import { Badge, Breadcrumbs, Callout, Chip } from '@/components/index.ts'
+import { Badge, Breadcrumbs, Callout, Chip, ReportProblem } from '@/components/index.ts'
 import { projects, resources, topics } from '@/content/generated/index.ts'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta.ts'
 import { getTopic } from '@/lib/selectors/topics.ts'
@@ -122,6 +122,10 @@ export function ProjectDetail() {
           <Section id="responsible" title="Before you use this for anything real">
             <Callout tone="warn">{project.responsible_use_notes}</Callout>
           </Section>
+
+          <ReportProblem
+            context={{ recordId: project.id, title: project.title, url: null, kind: 'project' }}
+          />
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">

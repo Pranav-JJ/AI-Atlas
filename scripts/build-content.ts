@@ -17,6 +17,7 @@ import { join } from 'node:path'
 import MiniSearch from 'minisearch'
 
 import { applyStaleDowngrade, findStaleRecords } from '../src/lib/content/rules.ts'
+import { recordRoutes, SECTION_META, type RouteMeta } from '../src/lib/routeMeta.ts'
 import { miniSearchOptions, toSearchDocument } from '../src/lib/search/config.ts'
 import { loadContentSet, reportIssues } from './content-pipeline.ts'
 
@@ -133,6 +134,33 @@ export const serializedSearchIndex = ${JSON.stringify(JSON.stringify(miniSearch)
   'utf8',
 )
 
+/*
+ * Every route the site can serve, with its own title and description.
+ *
+ * Emitted here rather than assembled in vite.config so that the sitemap, the
+ * pre-rendered HTML and the runtime all read the same list. A route that exists
+ * in one and not the others is exactly the kind of drift nobody notices.
+ */
+const allRoutes: RouteMeta[] = [
+  ...SECTION_META,
+  ...recordRoutes(records.resources, '/library', { priority: 0.7 }),
+  ...recordRoutes(records.paths, '/paths', { priority: 0.8, changefreq: 'weekly' }),
+  ...recordRoutes(records.projects, '/projects', { priority: 0.7 }),
+  ...recordRoutes(records.glossary, '/glossary', { priority: 0.6 }),
+  ...recordRoutes(records.topics, '/topics', { priority: 0.5 }),
+]
+
+await writeFile(
+  join(OUT_DIR, 'routes.ts'),
+  `${BANNER}
+import type { RouteMeta } from '@/lib/routeMeta.ts'
+
+/** Every renderable route, for pre-rendering and the sitemap. */
+export const allRoutes: readonly RouteMeta[] = ${JSON.stringify(allRoutes, null, 2)} as const
+`,
+  'utf8',
+)
+
 const manifest = {
   contentVersion,
   generatedAt: today,
@@ -170,6 +198,7 @@ export { learningPaths } from './paths.ts'
 export { projects } from './projects.ts'
 export { glossary } from './glossary.ts'
 export { contentManifest } from './manifest.ts'
+export { allRoutes } from './routes.ts'
 `,
   'utf8',
 )
@@ -188,4 +217,5 @@ console.log(
 )
 if (staleCount > 0) console.log(`  ${staleCount} record(s) downgraded to stale by rule 9`)
 if (warnings.length > 0) console.log(`  ${warnings.length} warning(s) — see content:validate`)
+console.log(`  ${allRoutes.length} routes (${SECTION_META.length} sections + record pages)`)
 console.log(`  -> ${OUT_DIR}/`)

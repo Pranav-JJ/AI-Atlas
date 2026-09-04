@@ -24,8 +24,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "verify": "npm run format:check && npm run content:validate && npm run content:build && npm run lint && npm run typecheck && npm run test && npm run build",
-    "links:check": "node scripts/check-links.ts"
+    "verify": "npm run format:check && npm run content:validate && npm run content:build && npm run lint && npm run typecheck && npm run test && npm run build && npm run budget",
+    "links:check": "node scripts/check-links.ts",
+    "budget": "node scripts/check-budget.mjs"
   },
   "dependencies": {
     "minisearch": "^7.2.0",

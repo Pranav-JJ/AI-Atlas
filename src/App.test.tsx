@@ -8,7 +8,7 @@ import { expectNoA11yViolations } from '@tests/a11y.ts'
 import { topics } from '@/content/generated/index.ts'
 
 import { App } from './App.tsx'
-import { STATIC_ROUTES } from './routes-manifest.ts'
+import { SECTION_META } from './lib/routeMeta.ts'
 
 function renderAt(path: string): ReturnType<typeof render> {
   const ui: ReactElement = (
@@ -20,7 +20,7 @@ function renderAt(path: string): ReturnType<typeof render> {
 }
 
 /** Every route the app is expected to render, including a dynamic one. */
-const ALL_ROUTES = [...STATIC_ROUTES, '/topics/nlp', '/does-not-exist']
+const ALL_ROUTES = [...SECTION_META.map((r) => r.path), '/topics/nlp', '/does-not-exist']
 
 beforeEach(() => {
   localStorage.clear()
@@ -125,6 +125,22 @@ describe('routing', () => {
       unmount()
     }
   })
+})
+
+describe('route metadata matches what each page renders', () => {
+  // SECTION_META is what the build injects into the pre-rendered HTML, while
+  // useDocumentMeta is what the running app sets. They are two representations
+  // of one decision, and would drift the first time someone reworded a heading.
+  it.each(SECTION_META.map((r) => [r.path, r.title]))(
+    '%s sets the title SECTION_META declares',
+    async (path, expectedTitle) => {
+      renderAt(path)
+      await screen.findByRole('heading', { level: 1 })
+
+      const suffix = expectedTitle === 'AI Atlas' ? 'AI Atlas' : `${expectedTitle} — AI Atlas`
+      expect(document.title).toBe(suffix)
+    },
+  )
 })
 
 describe('page structure', () => {

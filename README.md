@@ -6,7 +6,7 @@ It answers three questions a learner keeps re-asking: *what should I learn next*
 
 It is not a link dump and not a course platform. Every external resource carries honest provenance — who made it, when a human last checked it, why it is useful, and whether it has been verified at all.
 
-> **Status: Phase 12.** Every surface the plan described exists at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/), over a validated catalogue of 160 records, with a scheduled link-health check and a report-a-problem affordance on every record. One phase remains: SEO, performance and accessibility hardening.
+> **Status: all 13 phases complete.** Live at [pranav-jj.github.io/AI-Atlas](https://pranav-jj.github.io/AI-Atlas/) — 151 pre-rendered pages over a validated catalogue of 160 records, with enforced build budgets, a scheduled link-health check, and per-route metadata for search and sharing.
 
 ---
 
@@ -30,6 +30,7 @@ npm run dev     # http://localhost:5173/AI-Atlas/
 | `npm run content:validate` | Check `content/` against the schemas and the 14 editorial rules |
 | `npm run content:build` | Compile `content/` into typed modules + a prebuilt search index |
 | `npm run links:check` | Check every external URL and report; never edits content, always exits 0 |
+| `npm run budget` | Enforce the gzipped build budgets against `dist/` |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (includes the security guardrails below) |
 | `npm run lint:fix` | ESLint with autofix |
@@ -83,10 +84,10 @@ GitHub Pages has no rewrite rules, so an SPA deep link would normally 404. Two m
 
 | Route kind | Mechanism | Result |
 | --- | --- | --- |
-| Known at build time (`/`, `/paths`, `/library`, `/datasets`, `/papers`, `/projects`, `/glossary`, `/topics`, `/progress`, `/onboarding`, `/about`) | Pre-rendered — the build writes `dist/about/index.html` | True **HTTP 200**, no redirect flash |
-| Dynamic (`/paths/:id`, `/library/:id`, `/topics/:id`, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
+| **Every route with a content record behind it** — all 151, sections and individual resources, papers, datasets, projects, glossary terms and topics | Pre-rendered at build time, each with its own `<title>`, description, canonical and Open Graph tags | True **HTTP 200**, no redirect flash, correct link preview |
+| Anything else (a typo, a removed record, query strings) | `dist/404.html` encodes the URL and redirects to `index.html`, which restores it via `replaceState` | One brief redirect, URL preserved exactly |
 
-Static routes are declared in [`src/routes-manifest.ts`](src/routes-manifest.ts). Add a route there when you add it to the route table — [`src/routes-manifest.test.ts`](src/routes-manifest.test.ts) fails if a pre-rendered route isn't actually routed, which would otherwise serve a confident 200 containing the "Page not found" view.
+Routes come from [`src/lib/routeMeta.ts`](src/lib/routeMeta.ts): a fixed table for the eleven sections, plus one entry generated per content record. The build emits that list, and the sitemap, the pre-rendered pages and the runtime all read the same source — a route present in one and absent from the others is exactly the drift nobody notices.
 
 The redirect logic lives in [`src/lib/spa-fallback.ts`](src/lib/spa-fallback.ts) and is **inlined into `404.html` at build time from the same tested source**, so there is no untested copy-paste in a static HTML file.
 
@@ -292,6 +293,44 @@ Every resource, dataset, paper, project, path and glossary page carries a **"Rep
 
 It is a plain GitHub link rather than a form, because this is a static site with no backend — anything else would mean a third-party form service or an endpoint that does not exist.
 
+## SEO, performance and budgets
+
+### Metadata is baked in, not applied at runtime
+
+Search crawlers execute JavaScript and will see a title React sets. **The social crawlers behind link previews — Slack, Twitter, LinkedIn, iMessage — do not.** A runtime-only `<title>` therefore gives every shared link on the site the same generic preview.
+
+So the build pre-renders **all 151 routes**, each with its own `<title>`, description, `<link rel="canonical">` and Open Graph tags, plus a `sitemap.xml` and `robots.txt`. Every record — every resource, dataset, paper, project, glossary term and topic — is individually shareable and individually indexable.
+
+`SECTION_META` and what each page sets at runtime are two representations of one decision, so a test mounts every section route and asserts `document.title` matches the table. They would otherwise drift the first time someone reworded a heading.
+
+### Budgets are enforced, not aspirational
+
+`npm run budget` measures the real build and **fails CI and the deploy** when a budget is exceeded. Unlike the link checker, this one measures our own output, so failing is correct.
+
+| Budget | Limit | Actual |
+| --- | --- | --- |
+| Entry JS (gzip) | 180 kB | **93.6 kB** |
+| CSS (gzip) | 30 kB | **6.0 kB** |
+| Search index chunk (gzip) | 250 kB | **10.8 kB** |
+| Search index inside entry chunk | never | not present |
+| Line coverage on `src/lib/**` | ≥ 90% | **99.1%** |
+
+The last two matter most. The search index is the asset that grows with the catalogue, and the entire point of building it ahead of time is that it loads only when someone searches — so a check asserts it never lands in the entry chunk.
+
+**No fonts and no images are shipped at all.** The type stack is system fonts and every icon is inline SVG, so there is nothing to subset, preload or lazy-load. That was a design decision, not an oversight.
+
+### What is not automated
+
+Lighthouse cannot run in this environment — there is no browser — so the plan's Lighthouse-scored targets are **unverified**, not met:
+
+| Target | Status |
+| --- | --- |
+| Performance ≥ 90, Accessibility ≥ 95 | Not measured. Run `npx lighthouse <url> --preset=desktop` against the live site. |
+| LCP < 2.0s, CLS < 0.05 | Not measured. |
+| Zero critical/serious axe violations, every route | **Automated** — asserted in the test suite on every route. |
+
+The axe coverage is real and runs in CI. The scored metrics need a browser and a human to look at the numbers.
+
 ## Your data
 
 There are no accounts. Everything AI Atlas remembers — level, goal, weekly target, bookmarks, completions, recently viewed — lives in **one `localStorage` key in your browser** and is never transmitted. `/progress` shows the complete extent of it, exports it, and deletes it.
@@ -388,7 +427,7 @@ Content-level rules (URL scheme, verification status) are enforced at build time
 | 10 | Project explorer | ✅ Done |
 | 11 | Glossary and concept pages | ✅ Done |
 | 12 | Link health and editorial operations | ✅ Done |
-| 13 | SEO, performance and accessibility hardening | Next |
+| 13 | SEO, performance and accessibility hardening | ✅ Done |
 
 ## Two rules this product will not bend on
 

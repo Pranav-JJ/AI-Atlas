@@ -53,6 +53,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Measures our own output, so unlike the link checker this one SHOULD
+      # fail the build. It catches a dependency quietly landing in the entry
+      # chunk, which is the regression that actually matters here.
+      - name: Check build budgets
+        run: node scripts/check-budget.mjs
+
       - name: Assert no secrets were bundled
         # The deployed bundle is public. Nothing resembling an env file or a key
         # may ever reach dist/. This is cheap insurance against a future mistake.
